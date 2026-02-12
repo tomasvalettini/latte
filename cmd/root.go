@@ -1,16 +1,14 @@
 /*
 Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
-
-
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -48,4 +46,10 @@ func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
+// TODO: extract this to be able to unit test with a tmp location
+func itemFilePath() string {
+	home, _ := os.UserHomeDir()
+
+	return filepath.Join(home, ".latte", "items.json")
+}
 

@@ -1,13 +1,11 @@
 /*
 Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/tomasvalettini/latte/backlog"
 )
 
 // addCmd represents the add command
@@ -21,7 +19,27 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("add called")
+		// get the text
+		text := args[0]
+
+		// load items
+		bl := backlog.NewBacklog(itemFilePath())
+		items := bl.Load()
+
+		// get next id 
+		nextId := backlog.GetNextId(items)
+
+		// create item to be saved
+		item := backlog.Item{
+			Id: nextId,
+			Text: text,
+		}
+		
+		// add item to items
+		items = append(items, item)
+
+		// save item
+		bl.Save(items)
 	},
 }
 
