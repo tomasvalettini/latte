@@ -1,13 +1,11 @@
 /*
 Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+	"github.com/tomasvalettini/latte/backlog"
 )
 
 // listCmd represents the list command
@@ -21,7 +19,23 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("list called")
+		// TODO: move this to a controller type component
+		bl := backlog.NewBacklog(itemFilePath())
+		items := bl.Load()
+		itemsCount := len(items)
+
+		if itemsCount <= 0 {
+			cmd.Println("No items yet.")
+		}
+
+		cmd.Println("===========")
+		cmd.Println(" TASK LIST ")
+		cmd.Println("===========")
+
+		w := backlog.MaxIdWidth(items)
+		for _, t := range items {
+			cmd.Printf("  [%*d]  %s\n", w, t.Id, t.Text)
+		}
 	},
 }
 
