@@ -26,10 +26,11 @@ to quickly create a Cobra application.`,
 
 		if itemsCount <= 0 {
 			cmd.Println("No items yet.")
+			return
 		}
 
 		cmd.Println("===========")
-		cmd.Println(" TASK LIST ")
+		cmd.Println(" ITEM LIST ")
 		cmd.Println("===========")
 
 		w := backlog.MaxIdWidth(items)

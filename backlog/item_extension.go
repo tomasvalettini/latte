@@ -23,7 +23,17 @@ func MaxIdWidth(items []Item) int {
 			maxWidth = w
 		}
 	}
-
+	
 	return maxWidth
+}
+
+func FindIndexFromId(items []Item, id int) int {
+	for idx, item := range items {
+		if item.Id == id {
+			return idx
+		}
+	}
+
+	panic("Item id was not found")
 }
 
