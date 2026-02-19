@@ -40,7 +40,7 @@ func (backlog *Backlog) Load() []Item {
 
 func (backlog *Backlog) Save(items []Item) {
 	err := os.MkdirAll(filepath.Dir(backlog.itemsPath), 0o755)
-	assert.Assert(err == nil, "Error while creating and opening items db.")
+	assert.Assert(err == nil, "Error while creating and opening task db.")
 
 	data, err := json.MarshalIndent(items, "", "  ")
 	assert.Assert(err == nil, "Error while creating json.")

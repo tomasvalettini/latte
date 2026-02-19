@@ -1,13 +1,13 @@
 /*
 Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/spf13/cobra"
+	"github.com/tomasvalettini/latte/backlog"
 )
 
 // deleteCmd represents the delete command
@@ -21,7 +21,27 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("delete called")
+		id, err := strconv.Atoi(args[0])
+		if err != nil {
+			cmd.PrintErrln("Error reading item id.")
+			return
+		}
+		
+		// duplicated code from list.go
+		bl := backlog.NewBacklog(itemFilePath())
+		items := bl.Load()
+		itemsCount := len(items)
+
+		if itemsCount <= 0 {
+			cmd.Println("No items yet.")
+			return
+		}
+
+		idx := backlog.FindIndexFromId(items, id)
+		items = append(items[:idx], items[idx + 1:]...)
+		bl.Save(items)
+
+		cmd.Printf("Item with id: %d was successfully removed!!\n", id)
 	},
 }
 

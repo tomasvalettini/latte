@@ -17,7 +17,7 @@ func TestItemsGetUnusedId(t *testing.T) {
 
 	items = append(items, Item{ Id: 3, Text: ""})
 	id = GetNextId(items)
-	assert.Assert(id == 4, "Next id should be 3")
+	assert.Assert(id == 4, "Next id should be 4")
 }
 
 func TestMaxIdWidth(t *testing.T) {
@@ -40,5 +40,25 @@ func TestMaxIdWidth(t *testing.T) {
 	items = append(items, Item{ Id: 1111, Text: ""})
 	w = MaxIdWidth(items)
 	assert.Assert(w == 4, "Width should be 4")
+}
+
+func TestFindIndexFromId(t *testing.T) {
+	items := []Item{}
+	items = append(items, Item{ Id: 1, Text: ""})
+	items = append(items, Item{ Id: 11, Text: ""})
+	items = append(items, Item{ Id: 111, Text: ""})
+	items = append(items, Item{ Id: 1111, Text: ""})
+
+	id := FindIndexFromId(items, 1)
+	assert.Assert(id == 0, "Id in the wrong index")
+
+	id = FindIndexFromId(items, 11)
+	assert.Assert(id == 1, "Id in the wrong index")
+
+	id = FindIndexFromId(items, 111)
+	assert.Assert(id == 2, "Id in the wrong index")
+
+	id = FindIndexFromId(items, 1111)
+	assert.Assert(id == 3, "Id in the wrong index")
 }
 
