@@ -2,6 +2,7 @@ package backlog
 
 import (
 	"encoding/json"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -9,7 +10,7 @@ import (
 )
 
 type Backlog struct {
-	itemsPath string;
+	itemsPath string
 }
 
 func NewBacklog(path string) *Backlog {
@@ -23,11 +24,10 @@ func (backlog *Backlog) Load() []Item {
 
 	if err != nil {
 		if os.IsNotExist(err) {
-			// no panic here :)
 			return []Item{}
 		}
 
-		panic("Error opening backlog file :(.")
+		log.Fatalln("Error opening backlog file :(.")
 	}
 
 	var items []Item
@@ -48,4 +48,3 @@ func (backlog *Backlog) Save(items []Item) {
 	data = append(data, '\n')
 	os.WriteFile(backlog.itemsPath, data, 0o644)
 }
-

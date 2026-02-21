@@ -1,6 +1,9 @@
 package backlog
 
-import "strconv"
+import (
+	"log"
+	"strconv"
+)
 
 func GetNextId(items []Item) int {
 	var id int = -1
@@ -23,7 +26,7 @@ func MaxIdWidth(items []Item) int {
 			maxWidth = w
 		}
 	}
-	
+
 	return maxWidth
 }
 
@@ -34,6 +37,6 @@ func FindIndexFromId(items []Item, id int) int {
 		}
 	}
 
-	panic("Item id was not found")
+	log.Fatalln("Item id was not found")
+	return -1
 }
-
