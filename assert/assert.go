@@ -1,8 +1,9 @@
 package assert
 
+import "log"
+
 func Assert(truth bool, msg string) {
 	if !truth {
-		panic(msg)
+		log.Fatalln(msg)
 	}
 }
-

@@ -2,25 +2,18 @@ package assert
 
 import (
 	"testing"
+
+	testutils "github.com/tomasvalettini/latte/test-utils"
 )
 
 func TestAssertTrue(t *testing.T) {
 	Assert(true, "no message needed")
 }
 
-func TestAssertFalse(t *testing.T) {
-	errorMessage := "Oh no!!!"
-
-	defer func() {
-		if r := recover(); r != nil {
-			if r == errorMessage {
-				t.Logf("Recovered from panic \n")
-			} else {
-				t.Errorf("Not the panic we were expecting")
-			}
-		}
-	}()
-
-	Assert(false, errorMessage)
+func TestAssertFalseWithoutPanic(t *testing.T) {
+	testutils.RequireExit("TestAssertFalseWithoutPanic", assertFalseTesting)
 }
 
+func assertFalseTesting() {
+	Assert(false, "Oh no!!!")
+}
