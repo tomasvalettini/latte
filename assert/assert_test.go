@@ -11,7 +11,7 @@ func TestAssertTrue(t *testing.T) {
 }
 
 func TestAssertFalseWithoutPanic(t *testing.T) {
-	testutils.RequireExit("TestAssertFalseWithoutPanic", assertFalseTesting)
+	testutils.RequireExit(t, "TestAssertFalseWithoutPanic", assertFalseTesting)
 }
 
 func assertFalseTesting() {

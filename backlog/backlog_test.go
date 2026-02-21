@@ -35,7 +35,7 @@ func TestBacklogLogic(t *testing.T) {
 }
 
 func TestBacklogLogicFailingFile(t *testing.T) {
-	testutils.RequireExit("TestBacklogLogicFailingFile", testingFailingFile)
+	testutils.RequireExit(t, "TestBacklogLogicFailingFile", testingFailingFile)
 }
 
 func testingFailingFile() {
