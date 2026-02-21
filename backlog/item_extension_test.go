@@ -64,7 +64,7 @@ func TestFindIndexFromId(t *testing.T) {
 }
 
 func TestFindIndexFromIdNotFound(t *testing.T) {
-	testutils.RequireExit("TestFindIndexFromIdNotFound", testFindIndexFromIdFailing)
+	testutils.RequireExit(t, "TestFindIndexFromIdNotFound", testFindIndexFromIdFailing)
 }
 
 func testFindIndexFromIdFailing() {

@@ -10,5 +10,5 @@ func exitIfError() {
 }
 
 func TestRequireExit(t *testing.T) {
-	RequireExit("TestRequireExit", exitIfError)
+	RequireExit(t, "TestRequireExit", exitIfError)
 }

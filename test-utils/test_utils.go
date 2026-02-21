@@ -3,11 +3,14 @@ package testutils
 import (
 	"os"
 	"os/exec"
+	"testing"
 )
 
 const BE_CRASHER = "BE_CRASHER"
 
-func RequireExit(testName string, testFunction func()) {
+func RequireExit(t *testing.T, testName string, testFunction func()) {
+	t.Helper()
+
 	// 1. Re-run the test binary, but invoke a specific test case
 	if os.Getenv(BE_CRASHER) == "1" {
 		testFunction()
