@@ -1,13 +1,14 @@
 /*
 Copyright © 2026 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
-	"fmt"
+	"log"
+	"strconv"
 
 	"github.com/spf13/cobra"
+	"github.com/tomasvalettini/latte/backlog"
 )
 
 // updateCmd represents the update command
@@ -21,7 +22,20 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("update called")
+		id, err := strconv.Atoi(args[0])
+		if err != nil {
+			log.Fatalln("Id entered is not a number.")
+		}
+
+		newText := args[1]
+
+		bl := backlog.NewBacklog(itemFilePath())
+		items := bl.Load()
+
+		index := backlog.FindIndexFromId(items, id)
+
+		items[index].Text = newText
+		bl.Save(items)
 	},
 }
 
