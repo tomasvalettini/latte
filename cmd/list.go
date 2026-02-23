@@ -15,21 +15,21 @@ var listCmd = &cobra.Command{
 	Long:  `Command to list all tasks with corresponding id.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: move this to a controller type component
-		bl := backlog.NewBacklog(itemFilePath())
-		items := bl.Load()
-		itemsCount := len(items)
+		bl := backlog.NewBacklog(taskFilePath())
+		tasks := bl.Load()
+		tasksCount := len(tasks)
 
-		if itemsCount <= 0 {
-			cmd.Println("No items yet.")
+		if tasksCount <= 0 {
+			cmd.Println("No tasks yet.")
 			return
 		}
 
 		cmd.Println("===========")
-		cmd.Println(" ITEM LIST ")
+		cmd.Println(" TASK LIST ")
 		cmd.Println("===========")
 
-		w := backlog.MaxIdWidth(items)
-		for _, t := range items {
+		w := backlog.MaxIdWidth(tasks)
+		for _, t := range tasks {
 			cmd.Printf("  [%*d]  %s\n", w, t.Id, t.Text)
 		}
 	},
