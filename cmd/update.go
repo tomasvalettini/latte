@@ -24,13 +24,13 @@ var updateCmd = &cobra.Command{
 
 		newText := args[1]
 
-		bl := backlog.NewBacklog(itemFilePath())
-		items := bl.Load()
+		bl := backlog.NewBacklog(taskFilePath())
+		tasks := bl.Load()
 
-		index := backlog.FindIndexFromId(items, id)
+		index := backlog.FindIndexFromId(tasks, id)
 
-		items[index].Text = newText
-		bl.Save(items)
+		tasks[index].Text = newText
+		bl.Save(tasks)
 	},
 }
 

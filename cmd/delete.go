@@ -18,25 +18,25 @@ var deleteCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id, err := strconv.Atoi(args[0])
 		if err != nil {
-			cmd.PrintErrln("Error reading item id.")
+			cmd.PrintErrln("Error reading task id.")
 			return
 		}
 
 		// duplicated code from list.go
-		bl := backlog.NewBacklog(itemFilePath())
-		items := bl.Load()
-		itemsCount := len(items)
+		bl := backlog.NewBacklog(taskFilePath())
+		tasks := bl.Load()
+		tasksCount := len(tasks)
 
-		if itemsCount <= 0 {
-			cmd.Println("No items yet.")
+		if tasksCount <= 0 {
+			cmd.Println("No tasks yet.")
 			return
 		}
 
-		idx := backlog.FindIndexFromId(items, id)
-		items = append(items[:idx], items[idx+1:]...)
-		bl.Save(items)
+		idx := backlog.FindIndexFromId(tasks, id)
+		tasks = append(tasks[:idx], tasks[idx+1:]...)
+		bl.Save(tasks)
 
-		cmd.Printf("Item with id: %d was successfully removed!!\n", id)
+		cmd.Printf("Task with id: %d was successfully removed!!\n", id)
 	},
 }
 

@@ -13,25 +13,25 @@ const tmp = "tmp/"
 
 func TestBacklogLogic(t *testing.T) {
 	bl := backlog.NewBacklog(tmp + "latte/test.json")
-	items := bl.Load()
-	assert.Assert(len(items) == 0, "There should not be any items yet!")
+	tasks := bl.Load()
+	assert.Assert(len(tasks) == 0, "There should not be any tasks yet!")
 
 	t.Cleanup(func() {
 		os.RemoveAll(tmp)
 	})
 
-	// create items here :)
-	item := backlog.Item{
+	// create tasks here :)
+	task := backlog.Task{
 		Id:   0,
-		Text: "test item",
+		Text: "test task",
 	}
 
-	items = append(items, item)
-	assert.Assert(len(items) != 0, "There should be items in the list!")
+	tasks = append(tasks, task)
+	assert.Assert(len(tasks) != 0, "There should be tasks in the list!")
 
-	bl.Save(items)
-	items = bl.Load()
-	assert.Assert(len(items) != 0, "There should be items in the list!")
+	bl.Save(tasks)
+	tasks = bl.Load()
+	assert.Assert(len(tasks) != 0, "There should be tasks in the list!")
 }
 
 func TestBacklogLogicFailingFile(t *testing.T) {

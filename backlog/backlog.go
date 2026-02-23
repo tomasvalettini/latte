@@ -10,41 +10,41 @@ import (
 )
 
 type Backlog struct {
-	itemsPath string
+	tasksPath string
 }
 
 func NewBacklog(path string) *Backlog {
 	return &Backlog{
-		itemsPath: path,
+		tasksPath: path,
 	}
 }
 
-func (backlog *Backlog) Load() []Item {
-	data, err := os.ReadFile(backlog.itemsPath)
+func (backlog *Backlog) Load() []Task {
+	data, err := os.ReadFile(backlog.tasksPath)
 
 	if err != nil {
 		if os.IsNotExist(err) {
-			return []Item{}
+			return []Task{}
 		}
 
 		log.Fatalln("Error opening backlog file :(.")
 	}
 
-	var items []Item
+	var tasks []Task
 
-	err = json.Unmarshal(data, &items)
+	err = json.Unmarshal(data, &tasks)
 	assert.Assert(err == nil, "Error while parsing json.")
 
-	return items
+	return tasks
 }
 
-func (backlog *Backlog) Save(items []Item) {
-	err := os.MkdirAll(filepath.Dir(backlog.itemsPath), 0o755)
+func (backlog *Backlog) Save(tasks []Task) {
+	err := os.MkdirAll(filepath.Dir(backlog.tasksPath), 0o755)
 	assert.Assert(err == nil, "Error while creating and opening task db.")
 
-	data, err := json.MarshalIndent(items, "", "  ")
+	data, err := json.MarshalIndent(tasks, "", "  ")
 	assert.Assert(err == nil, "Error while creating json.")
 
 	data = append(data, '\n')
-	os.WriteFile(backlog.itemsPath, data, 0o644)
+	os.WriteFile(backlog.tasksPath, data, 0o644)
 }

@@ -19,24 +19,24 @@ var addCmd = &cobra.Command{
 		// get the text
 		text := args[0]
 
-		// load items
-		bl := backlog.NewBacklog(itemFilePath())
-		items := bl.Load()
+		// load tasks
+		bl := backlog.NewBacklog(taskFilePath())
+		tasks := bl.Load()
 
 		// get next id
-		nextId := backlog.GetNextId(items)
+		nextId := backlog.GetNextId(tasks)
 
-		// create item to be saved
-		item := backlog.Item{
+		// create task to be saved
+		task := backlog.Task{
 			Id:   nextId,
 			Text: text,
 		}
 
-		// add item to items
-		items = append(items, item)
+		// add task to tasks
+		tasks = append(tasks, task)
 
-		// save item
-		bl.Save(items)
+		// save task
+		bl.Save(tasks)
 	},
 }
 

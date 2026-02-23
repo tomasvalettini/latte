@@ -50,8 +50,8 @@ func init() {
 }
 
 // TODO: extract this to be able to unit test with a tmp location
-func itemFilePath() string {
+func taskFilePath() string {
 	home, _ := os.UserHomeDir()
 
-	return filepath.Join(home, ".latte", "items.json")
+	return filepath.Join(home, ".latte", "tasks.json")
 }
