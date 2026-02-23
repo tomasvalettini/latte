@@ -13,20 +13,15 @@ import (
 // deleteCmd represents the delete command
 var deleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "delete task",
+	Long:  `Command to delete task with specific id.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		id, err := strconv.Atoi(args[0])
 		if err != nil {
 			cmd.PrintErrln("Error reading item id.")
 			return
 		}
-		
+
 		// duplicated code from list.go
 		bl := backlog.NewBacklog(itemFilePath())
 		items := bl.Load()
@@ -38,7 +33,7 @@ to quickly create a Cobra application.`,
 		}
 
 		idx := backlog.FindIndexFromId(items, id)
-		items = append(items[:idx], items[idx + 1:]...)
+		items = append(items[:idx], items[idx+1:]...)
 		bl.Save(items)
 
 		cmd.Printf("Item with id: %d was successfully removed!!\n", id)

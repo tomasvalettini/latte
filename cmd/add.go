@@ -11,13 +11,8 @@ import (
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "add task",
+	Long:  `Command to add task with auto generated id.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: move this to a controller type component
 
@@ -28,15 +23,15 @@ to quickly create a Cobra application.`,
 		bl := backlog.NewBacklog(itemFilePath())
 		items := bl.Load()
 
-		// get next id 
+		// get next id
 		nextId := backlog.GetNextId(items)
 
 		// create item to be saved
 		item := backlog.Item{
-			Id: nextId,
+			Id:   nextId,
 			Text: text,
 		}
-		
+
 		// add item to items
 		items = append(items, item)
 

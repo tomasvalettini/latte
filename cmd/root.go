@@ -13,13 +13,16 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "latte",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Short: "Little Actions Toward Tangible Éndings",
+	Long: `latte is a small, terminal-based task tracker focused on steady progress through simple, repeatable actions.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+    LATTÉ — Little Actions Toward Tangible Éndings
+
+No dashboards.
+No notifications.
+No productivity theater.
+
+Just a quiet tool to keep track of what matters next.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -43,7 +46,7 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // TODO: extract this to be able to unit test with a tmp location
@@ -52,4 +55,3 @@ func itemFilePath() string {
 
 	return filepath.Join(home, ".latte", "items.json")
 }
-
