@@ -4,11 +4,9 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"log"
-	"strconv"
-
 	"github.com/spf13/cobra"
 	"github.com/tomasvalettini/latte/backlog"
+	"github.com/tomasvalettini/latte/tasks/controller"
 )
 
 // updateCmd represents the update command
@@ -17,21 +15,10 @@ var updateCmd = &cobra.Command{
 	Short: "update task",
 	Long:  `Command to update task with specific id.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		id, err := strconv.Atoi(args[0])
-		if err != nil {
-			log.Fatalln("Id entered is not a number.")
-		}
+		taskPath := &backlog.LocalTaskPath{}
+		taskController := controller.NewTaskController(taskPath)
 
-		newText := args[1]
-
-		taskPath := backlog.LocalTaskPath{}
-		bl := backlog.NewBacklog(taskPath.GetTaskPath())
-		tasks := bl.Load()
-
-		index := backlog.FindIndexFromId(tasks, id)
-
-		tasks[index].Text = newText
-		bl.Save(tasks)
+		taskController.UpdateTask(args[0], args[1])
 	},
 }
 
