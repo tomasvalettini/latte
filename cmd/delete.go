@@ -4,10 +4,9 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"strconv"
-
 	"github.com/spf13/cobra"
 	"github.com/tomasvalettini/latte/backlog"
+	"github.com/tomasvalettini/latte/tasks/controller"
 )
 
 // deleteCmd represents the delete command
@@ -16,28 +15,10 @@ var deleteCmd = &cobra.Command{
 	Short: "delete task",
 	Long:  `Command to delete task with specific id.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		id, err := strconv.Atoi(args[0])
-		if err != nil {
-			cmd.PrintErrln("Error reading task id.")
-			return
-		}
+		taskPath := &backlog.LocalTaskPath{}
+		taskController := controller.NewTaskController(taskPath)
 
-		// duplicated code from list.go
-		taskPath := backlog.LocalTaskPath{}
-		bl := backlog.NewBacklog(taskPath.GetTaskPath())
-		tasks := bl.Load()
-		tasksCount := len(tasks)
-
-		if tasksCount <= 0 {
-			cmd.Println("No tasks yet.")
-			return
-		}
-
-		idx := backlog.FindIndexFromId(tasks, id)
-		tasks = append(tasks[:idx], tasks[idx+1:]...)
-		bl.Save(tasks)
-
-		cmd.Printf("Task with id: %d was successfully removed!!\n", id)
+		taskController.DeleteTask(args[0])
 	},
 }
 

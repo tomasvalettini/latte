@@ -6,6 +6,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"github.com/tomasvalettini/latte/backlog"
+	"github.com/tomasvalettini/latte/tasks/controller"
 )
 
 // listCmd represents the list command
@@ -14,25 +15,10 @@ var listCmd = &cobra.Command{
 	Short: "list tasks",
 	Long:  `Command to list all tasks with corresponding id.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: move this to a controller type component
-		taskPath := backlog.LocalTaskPath{}
-		bl := backlog.NewBacklog(taskPath.GetTaskPath())
-		tasks := bl.Load()
-		tasksCount := len(tasks)
+		taskPath := &backlog.LocalTaskPath{}
+		taskController := controller.NewTaskController(taskPath)
 
-		if tasksCount <= 0 {
-			cmd.Println("No tasks yet.")
-			return
-		}
-
-		cmd.Println("===========")
-		cmd.Println(" TASK LIST ")
-		cmd.Println("===========")
-
-		w := backlog.MaxIdWidth(tasks)
-		for _, t := range tasks {
-			cmd.Printf("  [%*d]  %s\n", w, t.Id, t.Text)
-		}
+		taskController.ListTasks()
 	},
 }
 

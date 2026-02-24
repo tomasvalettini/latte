@@ -9,22 +9,14 @@ import (
 	testutils "github.com/tomasvalettini/latte/test-utils"
 )
 
-const tmp = "tmp/"
-
-type TestTaskPath struct{}
-
-func (ttp *TestTaskPath) GetTaskPath() string {
-	return tmp + "latte/test.json"
-}
-
 func TestBacklogLogic(t *testing.T) {
-	ttp := getTestingTaskPath()
+	ttp := backlog.GetTestingTaskPath()
 	bl := backlog.NewBacklog(ttp.GetTaskPath())
 	tasks := bl.Load()
 	assert.Assert(len(tasks) == 0, "There should not be any tasks yet!")
 
 	t.Cleanup(func() {
-		os.RemoveAll(tmp)
+		os.RemoveAll(backlog.TMP)
 	})
 
 	// create tasks here :)
@@ -46,10 +38,6 @@ func TestBacklogLogicFailingFile(t *testing.T) {
 }
 
 func testingFailingFile() {
-	bl := backlog.NewBacklog(tmp)
+	bl := backlog.NewBacklog(backlog.TMP)
 	bl.Load()
-}
-
-func getTestingTaskPath() backlog.TaskPath {
-	return &TestTaskPath{}
 }
