@@ -11,8 +11,15 @@ import (
 
 const tmp = "tmp/"
 
+type TestTaskPath struct{}
+
+func (ttp *TestTaskPath) GetTaskPath() string {
+	return tmp + "latte/test.json"
+}
+
 func TestBacklogLogic(t *testing.T) {
-	bl := backlog.NewBacklog(tmp + "latte/test.json")
+	ttp := getTestingTaskPath()
+	bl := backlog.NewBacklog(ttp.GetTaskPath())
 	tasks := bl.Load()
 	assert.Assert(len(tasks) == 0, "There should not be any tasks yet!")
 
@@ -41,4 +48,8 @@ func TestBacklogLogicFailingFile(t *testing.T) {
 func testingFailingFile() {
 	bl := backlog.NewBacklog(tmp)
 	bl.Load()
+}
+
+func getTestingTaskPath() backlog.TaskPath {
+	return &TestTaskPath{}
 }

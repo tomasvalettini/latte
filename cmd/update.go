@@ -24,7 +24,8 @@ var updateCmd = &cobra.Command{
 
 		newText := args[1]
 
-		bl := backlog.NewBacklog(taskFilePath())
+		taskPath := backlog.LocalTaskPath{}
+		bl := backlog.NewBacklog(taskPath.GetTaskPath())
 		tasks := bl.Load()
 
 		index := backlog.FindIndexFromId(tasks, id)

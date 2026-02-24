@@ -20,7 +20,8 @@ var addCmd = &cobra.Command{
 		text := args[0]
 
 		// load tasks
-		bl := backlog.NewBacklog(taskFilePath())
+		taskPath := backlog.LocalTaskPath{}
+		bl := backlog.NewBacklog(taskPath.GetTaskPath())
 		tasks := bl.Load()
 
 		// get next id

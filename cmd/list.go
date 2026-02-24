@@ -15,7 +15,8 @@ var listCmd = &cobra.Command{
 	Long:  `Command to list all tasks with corresponding id.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// TODO: move this to a controller type component
-		bl := backlog.NewBacklog(taskFilePath())
+		taskPath := backlog.LocalTaskPath{}
+		bl := backlog.NewBacklog(taskPath.GetTaskPath())
 		tasks := bl.Load()
 		tasksCount := len(tasks)
 
