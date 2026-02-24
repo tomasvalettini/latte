@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"os"
-	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
@@ -47,11 +46,4 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
-// TODO: extract this to be able to unit test with a tmp location
-func taskFilePath() string {
-	home, _ := os.UserHomeDir()
-
-	return filepath.Join(home, ".latte", "tasks.json")
 }

@@ -23,7 +23,8 @@ var deleteCmd = &cobra.Command{
 		}
 
 		// duplicated code from list.go
-		bl := backlog.NewBacklog(taskFilePath())
+		taskPath := backlog.LocalTaskPath{}
+		bl := backlog.NewBacklog(taskPath.GetTaskPath())
 		tasks := bl.Load()
 		tasksCount := len(tasks)
 
