@@ -1,11 +1,12 @@
-package backlog
+package taskpath
 
 const TMP = "tmp/"
+const TEST_TASK_FILE = "latte/test.json"
 
 type TestTaskPath struct{}
 
 func (ttp *TestTaskPath) GetTaskPath() string {
-	return TMP + "latte/test.json"
+	return TMP + TEST_TASK_FILE
 }
 
 func GetTestingTaskPath() TaskPath {

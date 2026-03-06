@@ -5,16 +5,18 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/tomasvalettini/latte/backlog"
+	taskdatasource "github.com/tomasvalettini/latte/tasks/data/data-source"
+	taskdatamodel "github.com/tomasvalettini/latte/tasks/data/model"
+	taskpath "github.com/tomasvalettini/latte/tasks/path"
 )
 
 type TaskController struct {
-	taskPath   backlog.TaskPath
-	dataSource *backlog.Backlog
+	taskPath   taskpath.TaskPath
+	dataSource *taskdatasource.TaskBacklog
 }
 
-func NewTaskController(taskPath backlog.TaskPath) *TaskController {
-	dataSource := backlog.NewBacklog(taskPath.GetTaskPath())
+func NewTaskController(taskPath taskpath.TaskPath) *TaskController {
+	dataSource := taskdatasource.NewTaskBacklog(taskPath.GetTaskPath())
 
 	return &TaskController{
 		taskPath:   taskPath,
@@ -32,7 +34,7 @@ func (tc *TaskController) ListTasks() {
 	fmt.Println(" TASK LIST ")
 	fmt.Println("===========")
 
-	w := backlog.MaxIdWidth(tasks)
+	w := taskdatamodel.MaxIdWidth(tasks)
 	for _, t := range tasks {
 		fmt.Printf("  [%*d]  %s\n", w, t.Id, t.Text)
 	}
@@ -40,9 +42,9 @@ func (tc *TaskController) ListTasks() {
 
 func (tc *TaskController) AddTask(taskText string) {
 	tasks := tc.dataSource.Load()
-	nextId := backlog.GetNextId(tasks)
+	nextId := taskdatamodel.GetNextId(tasks)
 
-	task := backlog.Task{
+	task := taskdatamodel.Task{
 		Id:   nextId,
 		Text: taskText,
 	}
@@ -63,7 +65,7 @@ func (tc *TaskController) DeleteTask(idStr string) {
 		return
 	}
 
-	idx := backlog.FindIndexFromId(tasks, id)
+	idx := taskdatamodel.FindIndexFromId(tasks, id)
 	tasks = append(tasks[:idx], tasks[idx+1:]...)
 	tc.dataSource.Save(tasks)
 
@@ -77,7 +79,7 @@ func (tc *TaskController) UpdateTask(idStr string, newText string) {
 	}
 
 	tasks := tc.dataSource.Load()
-	index := backlog.FindIndexFromId(tasks, id)
+	index := taskdatamodel.FindIndexFromId(tasks, id)
 
 	tasks[index].Text = newText
 	tc.dataSource.Save(tasks)
@@ -85,7 +87,7 @@ func (tc *TaskController) UpdateTask(idStr string, newText string) {
 	fmt.Printf("Task with id: %d was successfully modified with new text:%s\n", id, newText)
 }
 
-func (tc *TaskController) loadTasks() ([]backlog.Task, bool) {
+func (tc *TaskController) loadTasks() ([]taskdatamodel.Task, bool) {
 	tasks := tc.dataSource.Load()
 	tasksCount := len(tasks)
 

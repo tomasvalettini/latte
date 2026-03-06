@@ -5,8 +5,8 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/tomasvalettini/latte/backlog"
 	"github.com/tomasvalettini/latte/tasks/controller"
+	taskpath "github.com/tomasvalettini/latte/tasks/path"
 )
 
 // addCmd represents the add command
@@ -15,7 +15,7 @@ var addCmd = &cobra.Command{
 	Short: "add task",
 	Long:  `Command to add task with auto generated id.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		taskPath := &backlog.LocalTaskPath{}
+		taskPath := &taskpath.LocalTaskPath{}
 		taskController := controller.NewTaskController(taskPath)
 
 		text := args[0]

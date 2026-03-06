@@ -5,8 +5,8 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/tomasvalettini/latte/backlog"
 	"github.com/tomasvalettini/latte/tasks/controller"
+	taskpath "github.com/tomasvalettini/latte/tasks/path"
 )
 
 // listCmd represents the list command
@@ -15,7 +15,7 @@ var listCmd = &cobra.Command{
 	Short: "list tasks",
 	Long:  `Command to list all tasks with corresponding id.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		taskPath := &backlog.LocalTaskPath{}
+		taskPath := &taskpath.LocalTaskPath{}
 		taskController := controller.NewTaskController(taskPath)
 
 		taskController.ListTasks()
