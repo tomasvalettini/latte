@@ -4,12 +4,13 @@ import (
 	"os"
 	"testing"
 
-	"github.com/tomasvalettini/latte/backlog"
+	taskdatasource "github.com/tomasvalettini/latte/tasks/data/data-source"
+	taskpath "github.com/tomasvalettini/latte/tasks/path"
 )
 
 func GetTestTaskController() *TaskController {
-	tp := backlog.GetTestingTaskPath()
-	bl := backlog.NewBacklog(tp.GetTaskPath())
+	tp := taskpath.GetTestingTaskPath()
+	bl := taskdatasource.NewTaskBacklog(tp.GetTaskPath())
 	return &TaskController{
 		taskPath:   tp,
 		dataSource: bl,
@@ -35,6 +36,6 @@ func TestTaskController(t *testing.T) {
 	tc.UpdateTask("2", "new test")
 
 	t.Cleanup(func() {
-		os.RemoveAll(backlog.TMP)
+		os.RemoveAll(taskpath.TMP)
 	})
 }

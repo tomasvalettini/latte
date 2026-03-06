@@ -5,8 +5,8 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/tomasvalettini/latte/backlog"
 	"github.com/tomasvalettini/latte/tasks/controller"
+	taskpath "github.com/tomasvalettini/latte/tasks/path"
 )
 
 // updateCmd represents the update command
@@ -15,7 +15,7 @@ var updateCmd = &cobra.Command{
 	Short: "update task",
 	Long:  `Command to update task with specific id.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		taskPath := &backlog.LocalTaskPath{}
+		taskPath := &taskpath.LocalTaskPath{}
 		taskController := controller.NewTaskController(taskPath)
 
 		taskController.UpdateTask(args[0], args[1])

@@ -1,4 +1,4 @@
-package backlog
+package taskdatasource
 
 import (
 	"encoding/json"
@@ -7,30 +7,31 @@ import (
 	"path/filepath"
 
 	"github.com/tomasvalettini/latte/assert"
+	taskdatamodel "github.com/tomasvalettini/latte/tasks/data/model"
 )
 
-type Backlog struct {
+type TaskBacklog struct {
 	tasksPath string
 }
 
-func NewBacklog(path string) *Backlog {
-	return &Backlog{
+func NewTaskBacklog(path string) *TaskBacklog {
+	return &TaskBacklog{
 		tasksPath: path,
 	}
 }
 
-func (backlog *Backlog) Load() []Task {
+func (backlog *TaskBacklog) Load() []taskdatamodel.Task {
 	data, err := os.ReadFile(backlog.tasksPath)
 
 	if err != nil {
 		if os.IsNotExist(err) {
-			return []Task{}
+			return []taskdatamodel.Task{}
 		}
 
 		log.Fatalln("Error opening backlog file :(.")
 	}
 
-	var tasks []Task
+	var tasks []taskdatamodel.Task
 
 	err = json.Unmarshal(data, &tasks)
 	assert.Assert(err == nil, "Error while parsing json.")
@@ -38,7 +39,7 @@ func (backlog *Backlog) Load() []Task {
 	return tasks
 }
 
-func (backlog *Backlog) Save(tasks []Task) {
+func (backlog *TaskBacklog) Save(tasks []taskdatamodel.Task) {
 	err := os.MkdirAll(filepath.Dir(backlog.tasksPath), 0o755)
 	assert.Assert(err == nil, "Error while creating and opening task db.")
 

@@ -1,4 +1,4 @@
-package backlog
+package taskdatamodel
 
 type Task struct {
 	Id 	 int	`json:"id"`
