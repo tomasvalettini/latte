@@ -5,20 +5,20 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/tomasvalettini/latte/tasks/controller"
-	taskpath "github.com/tomasvalettini/latte/tasks/path"
+	"github.com/tomasvalettini/latte/drips/controller"
+	drippath "github.com/tomasvalettini/latte/drips/path"
 )
 
 // deleteCmd represents the delete command
 var deleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "delete task",
-	Long:  `Command to delete task with specific id.`,
+	Short: "delete drip",
+	Long:  `Command to delete drip with specific id.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		taskPath := &taskpath.LocalTaskPath{}
-		taskController := controller.NewTaskController(taskPath)
+		dripPath := &drippath.LocalDripPath{}
+		dripController := controller.NewDripController(dripPath)
 
-		taskController.DeleteTask(args[0])
+		dripController.DeleteDrip(args[0])
 	},
 }
 

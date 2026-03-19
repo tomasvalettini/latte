@@ -13,7 +13,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "latte",
 	Short: "Little Actions Toward Tangible Éndings",
-	Long: `latte is a small, terminal-based task tracker focused on steady progress through simple, repeatable actions.
+	Long: `latte is a small, terminal-based drip tracker focused on steady progress through simple, repeatable actions.
 
     LATTÉ — Little Actions Toward Tangible Éndings
 
