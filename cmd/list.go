@@ -5,20 +5,20 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/tomasvalettini/latte/tasks/controller"
-	taskpath "github.com/tomasvalettini/latte/tasks/path"
+	"github.com/tomasvalettini/latte/drips/controller"
+	drippath "github.com/tomasvalettini/latte/drips/path"
 )
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "list tasks",
-	Long:  `Command to list all tasks with corresponding id.`,
+	Short: "list drips",
+	Long:  `Command to list all drips with corresponding id.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		taskPath := &taskpath.LocalTaskPath{}
-		taskController := controller.NewTaskController(taskPath)
+		dripPath := &drippath.LocalDripPath{}
+		dripController := controller.NewDripController(dripPath)
 
-		taskController.ListTasks()
+		dripController.ListDrips()
 	},
 }
 

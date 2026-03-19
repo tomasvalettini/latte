@@ -1,6 +1,6 @@
-package taskdatamodel
+package dripdatamodel
 
-type Task struct {
+type Drip struct {
 	Id 	 int	`json:"id"`
 	Text string `json:"text"`
 }

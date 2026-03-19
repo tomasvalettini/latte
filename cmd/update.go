@@ -5,20 +5,20 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/tomasvalettini/latte/tasks/controller"
-	taskpath "github.com/tomasvalettini/latte/tasks/path"
+	"github.com/tomasvalettini/latte/drips/controller"
+	drippath "github.com/tomasvalettini/latte/drips/path"
 )
 
 // updateCmd represents the update command
 var updateCmd = &cobra.Command{
 	Use:   "update",
-	Short: "update task",
-	Long:  `Command to update task with specific id.`,
+	Short: "update drip",
+	Long:  `Command to update drip with specific id.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		taskPath := &taskpath.LocalTaskPath{}
-		taskController := controller.NewTaskController(taskPath)
+		dripPath := &drippath.LocalDripPath{}
+		dripController := controller.NewDripController(dripPath)
 
-		taskController.UpdateTask(args[0], args[1])
+		dripController.UpdateDrip(args[0], args[1])
 	},
 }
 
