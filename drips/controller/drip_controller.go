@@ -11,7 +11,6 @@ import (
 )
 
 type DripController struct {
-	dripPath   drippath.DripPath
 	dataSource *dripdatasource.DripBacklog
 }
 
@@ -19,7 +18,6 @@ func NewDripController(dripPath drippath.DripPath) *DripController {
 	dataSource := dripdatasource.NewDripBacklog(dripPath.GetDripPath())
 
 	return &DripController{
-		dripPath:   dripPath,
 		dataSource: dataSource,
 	}
 }
