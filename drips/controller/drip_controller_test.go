@@ -4,17 +4,13 @@ import (
 	"os"
 	"testing"
 
-	dripdatasource "github.com/tomasvalettini/latte/drips/data/data-source"
 	drippath "github.com/tomasvalettini/latte/drips/path"
 )
 
 func GetTestDripController() *DripController {
 	tp := drippath.GetTestingDripPath()
-	bl := dripdatasource.NewDripBacklog(tp.GetDripPath())
-	return &DripController{
-		dripPath:   tp,
-		dataSource: bl,
-	}
+
+	return NewDripController(tp)
 }
 
 func TestDripController(t *testing.T) {
