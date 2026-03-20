@@ -38,6 +38,7 @@ func (tc *DripController) ListDrips() {
 	}
 }
 
+// adding a new drip based on the dripText
 func (tc *DripController) AddDrip(dripText string) {
 	drips := tc.dataSource.Load()
 	nextId := dripdatamodel.GetNextId(drips)

@@ -9,6 +9,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const DEFAULT_FLAG_BLEND_NAME = ""
+const DEFAULT_FLAG_ID = -1
+
+var flagBlendName string
+var flagBlendId int
+var flagDripId int
+
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "latte",

@@ -5,8 +5,8 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/tomasvalettini/latte/drips/controller"
-	drippath "github.com/tomasvalettini/latte/drips/path"
+	"github.com/tomasvalettini/latte/coffeeshop/controller"
+	carafepath "github.com/tomasvalettini/latte/coffeeshop/data/data-source/path"
 )
 
 // addCmd represents the add command
@@ -15,12 +15,14 @@ var addCmd = &cobra.Command{
 	Short: "add drip",
 	Long:  `Command to add drip with auto generated id.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		dripPath := &drippath.LocalDripPath{}
-		dripController := controller.NewDripController(dripPath)
-
+		cPath := &carafepath.LocalCarafePath{}
+		coffeeShopController := controller.NewCoffeeShopController(cPath)
 		text := args[0]
 
-		dripController.AddDrip(text)
+		coffeeShopController.AddToBlends(&controller.BlendIdentifier{
+			Id:    flagBlendId,
+			Title: flagBlendName,
+		}, text)
 	},
 }
 
@@ -36,4 +38,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	addCmd.Flags().StringVar(&flagBlendName, "blend", DEFAULT_FLAG_BLEND_NAME, "The blend to assign this drip to.")
+	addCmd.Flags().IntVar(&flagBlendId, "blendId", DEFAULT_FLAG_ID, "The ID of the blend to assign this drip to.")
 }
