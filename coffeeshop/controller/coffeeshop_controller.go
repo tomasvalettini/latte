@@ -42,10 +42,8 @@ func (csc *CoffeeShopController) ListBlends(bi *BlendIdentifier) {
 	}
 
 	if bi == nil {
-		// show all blends
-		for _, blend := range blends {
-			printBlend(blend)
-		}
+		// show all blends summary
+		printBlends(blends)
 		return
 	}
 
@@ -54,7 +52,7 @@ func (csc *CoffeeShopController) ListBlends(bi *BlendIdentifier) {
 		return
 	}
 
-	printBlend(*getBlendFromIdentifier(blends, bi))
+	printBlendDrips(*getBlendFromIdentifier(blends, bi))
 }
 
 func (csc *CoffeeShopController) AddToBlends(bi *BlendIdentifier, dripText string) {
@@ -306,7 +304,56 @@ func getBlendFromIdentifier(blends []datamodel.Blend, bi *BlendIdentifier) *data
 	return nil
 }
 
-func printBlend(blend datamodel.Blend) {
+func printBlends(blends []datamodel.Blend) {
+	maxWidth := 15
+
+	type blendLine struct {
+		id    int
+		title string
+		count int
+		noun  string
+		full  string
+	}
+
+	lines := make([]blendLine, len(blends))
+
+	for i, b := range blends {
+		noun := "drips"
+		if len(b.Drips) == 1 {
+			noun = "drip"
+		}
+
+		idWidth := datamodel.MaxIdWidth(b.Drips)
+		formatted := fmt.Sprintf("  [%*d] %s (%d %s)", idWidth, b.Id, b.Title, len(b.Drips), noun)
+
+		if len(formatted) > maxWidth {
+			maxWidth = len(formatted)
+		}
+
+		lines[i] = blendLine{b.Id, b.Title, len(b.Drips), noun, formatted}
+	}
+
+	title := "ALL BLENDS"
+	bannerLine := strings.Repeat("=", maxWidth)
+
+	if len(title)+4 > maxWidth {
+		maxWidth = len(title) + 4
+		bannerLine = strings.Repeat("=", maxWidth)
+	}
+
+	leftPad := (maxWidth - len(title)) / 2
+	rightPad := maxWidth - len(title) - leftPad
+
+	fmt.Println(bannerLine)
+	fmt.Printf("%s%s%s\n", strings.Repeat(" ", leftPad), title, strings.Repeat(" ", rightPad))
+	fmt.Println(bannerLine)
+
+	for _, l := range lines {
+		fmt.Println(l.full)
+	}
+}
+
+func printBlendDrips(blend datamodel.Blend) {
 	blendIdWidth := len(strconv.Itoa(blend.Id))
 	width := len(blend.Title) + blendIdWidth + 3 + (margin_width * 2)
 	bannerLine := strings.Repeat("=", width)
