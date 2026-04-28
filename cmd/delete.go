@@ -15,13 +15,15 @@ var deleteCmd = &cobra.Command{
 	Short: "delete drip",
 	Long:  `Command to delete drip with specific id.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cPath := &carafepath.LocalCarafePath{}
-		coffeeShopController := controller.NewCoffeeShopController(cPath)
+		if !ShowHelpCmd(cmd, args) {
+			cPath := &carafepath.LocalCarafePath{}
+			coffeeShopController := controller.NewCoffeeShopController(cPath)
 
-		coffeeShopController.DeleteFromBlends(&controller.BlendIdentifier{
-			Id:    flagBlendId,
-			Title: flagBlendName,
-		}, flagDripId)
+			coffeeShopController.DeleteFromBlends(&controller.BlendIdentifier{
+				Id:    flagBlendId,
+				Title: flagBlendName,
+			}, flagDripId)
+		}
 	},
 }
 

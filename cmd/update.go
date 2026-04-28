@@ -15,14 +15,16 @@ var updateCmd = &cobra.Command{
 	Short: "update drip",
 	Long:  `Command to update drip with specific id.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cPath := &carafepath.LocalCarafePath{}
-		coffeeShopController := controller.NewCoffeeShopController(cPath)
-		text := args[0]
+		if !ShowHelpCmd(cmd, args) {
+			cPath := &carafepath.LocalCarafePath{}
+			coffeeShopController := controller.NewCoffeeShopController(cPath)
+			text := args[0]
 
-		coffeeShopController.UpdateDripInBlend(&controller.BlendIdentifier{
-			Id:    flagBlendId,
-			Title: flagBlendName,
-		}, flagDripId, text)
+			coffeeShopController.UpdateDripInBlend(&controller.BlendIdentifier{
+				Id:    flagBlendId,
+				Title: flagBlendName,
+			}, flagDripId, text)
+		}
 	},
 }
 
