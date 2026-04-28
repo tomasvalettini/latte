@@ -15,14 +15,16 @@ var addCmd = &cobra.Command{
 	Short: "add drip",
 	Long:  `Command to add drip with auto generated id.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cPath := &carafepath.LocalCarafePath{}
-		coffeeShopController := controller.NewCoffeeShopController(cPath)
-		text := args[0]
+		if !ShowHelpCmd(cmd, args) {
+			cPath := &carafepath.LocalCarafePath{}
+			coffeeShopController := controller.NewCoffeeShopController(cPath)
+			text := args[0]
 
-		coffeeShopController.AddToBlends(&controller.BlendIdentifier{
-			Id:    flagBlendId,
-			Title: flagBlendName,
-		}, text)
+			coffeeShopController.AddToBlends(&controller.BlendIdentifier{
+				Id:    flagBlendId,
+				Title: flagBlendName,
+			}, text)
+		}
 	},
 }
 

@@ -43,6 +43,16 @@ func Execute() {
 	}
 }
 
+func ShowHelpCmd(cmd *cobra.Command, args []string) bool {
+	if len(args) == 0 {
+		cmd.Help()
+
+		return true
+	}
+
+	return false
+}
+
 func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
