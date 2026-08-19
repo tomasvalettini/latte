@@ -37,7 +37,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// deleteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	deleteCmd.Flags().StringVar(&flagBlendName, "blend", DEFAULT_FLAG_BLEND_NAME, "The blend to assign this drip to.")
-	deleteCmd.Flags().IntVar(&flagBlendId, "blendId", DEFAULT_FLAG_ID, "The ID of the blend to assign this drip to.")
-	deleteCmd.Flags().IntVar(&flagDripId, "dripId", DEFAULT_FLAG_ID, "The ID of the drip to delete.")
+	deleteCmd.Flags().StringVar(&flagBlendName, FLAG_BLEND, DEFAULT_FLAG_BLEND_NAME, "The blend to assign this drip to.")
+	deleteCmd.Flags().IntVar(&flagBlendId, FLAG_BLEND_ID, DEFAULT_FLAG_ID, "The ID of the blend to assign this drip to.")
+	deleteCmd.Flags().IntVar(&flagDripId, FLAG_DRIP_ID, DEFAULT_FLAG_ID, "The ID of the drip to delete.")
 }
