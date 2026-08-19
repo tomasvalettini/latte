@@ -39,6 +39,6 @@ func init() {
 	// is called directly, e.g.:
 	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	listCmd.Flags().StringVar(&flagBlendName, "blend", DEFAULT_FLAG_BLEND_NAME, "The blend to assign this drip to.")
-	listCmd.Flags().IntVar(&flagBlendId, "blendId", DEFAULT_FLAG_ID, "The ID of the blend to assign this drip to.")
+	listCmd.Flags().StringVar(&flagBlendName, FLAG_BLEND, DEFAULT_FLAG_BLEND_NAME, "The blend to assign this drip to.")
+	listCmd.Flags().IntVar(&flagBlendId, FLAG_BLEND_ID, DEFAULT_FLAG_ID, "The ID of the blend to assign this drip to.")
 }
