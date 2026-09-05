@@ -44,12 +44,31 @@ When executing shell commands or interacting with the terminal:
 - Error handling: `fmt.Println` for user errors, `assert.Assert()` for programmer errors
 - JSON tags: `json:"text"` (not `json:"title"`) for `Blend.Title`
 
+### Style Guidelines
+- Keep functions focused and small
+- Use meaningful variable names (prefer `foundBlend` over `b`, prefer `dripId` over `id`)
+- Use type-specific validation methods
+- Prefer composition over inheritance
+- Avoid panics in business logic; use error returns or user-friendly messages
+- Use constants for magic strings/numbers
+
 ### Testing Strategy
 - Table-driven tests with `Test` prefix structs
 - `t.Run()` subtests with descriptive names
 - `t.Cleanup()` for filesystem cleanup
 - `RequireExit` pattern for testing fatal code paths
 - Colocated test files: `foo_test.go` next to `foo.go`
+
+### Design Patterns
+- **Repository Pattern**: `CoffeeShopDataSource` handles all persistence via `Load()` and `Save()`
+- **Constructor Pattern**: All major types use `New*` constructors (`NewCoffeeShopController`, `NewCoffeeShopDataSource`)
+- **Identifier Pattern**: `BlendIdentifier` resolves by `Id` (≥0) OR `Title` (non-empty)
+- **Dependency Injection**: `CarafePath` interface allows swapping implementations (`LocalCarafePath`, `TestCarafePath`)
+
+### File Persistence
+- Blends stored as JSON in a single file (path determined by `CarafePath`)
+- `Load()` and `Save()` are the only I/O entry points
+- Empty file system returns empty slice (no error)
 
 ---
 
@@ -63,6 +82,15 @@ When executing shell commands or interacting with the terminal:
 
 ---
 
+## Philosophy & Principles
+1. **Unix Philosophy** — Do one thing well; compose small tools
+2. **Simplicity** — Prefer straightforward code over clever abstractions
+3. **Testability** — Design for easy testing (inject dependencies, avoid global state)
+4. **User-Friendly** — Clear messages, sensible defaults, no surprises
+5. **Separation of Concerns** — Keep layers distinct; avoid coupling
+
+---
+
 ## Pre-commit Validation
 1. `go fmt ./...` — no formatting diffs
 2. `go vet ./...` — no warnings
@@ -73,8 +101,21 @@ When executing shell commands or interacting with the terminal:
 ## Common Commands
 ```bash
 go build -o latte              # Build binary
+go install                      # Install on Linux/Mac
 go test ./...                  # Run all tests
+go test ./coffeeshop/controller # Run tests for specific package
+go test -run TestName ./...    # Run single test by name
 go test -v ./...              # Verbose output
 go test -cover ./...          # Coverage report
 go test -race ./...           # Race detection
+go test -coverprofile=coverage.out ./...  # Generate coverage file
 ```
+
+---
+
+## Troubleshooting
+| Problem | Solution |
+|---------|----------|
+| Test fails due to temp files not cleaning up | Ensure `t.Cleanup()` is called to remove `carafepath.TMP` |
+| stdin mocking not working | Capture `os.Stdin` before creating pipe; close write end and restore stdin after |
+| Import path conflicts | Use import aliases (e.g., `datasource "github.com/tomasvalettini/latte/..."`) |
