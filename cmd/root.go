@@ -9,9 +9,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var flagBlendName string
-var flagBlendId int
-var flagDripId int
+var flagBlendName string = ""
+var flagBlendId int = -1
+var flagDripId int = -1
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{

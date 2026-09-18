@@ -1,13 +1,19 @@
 package controller
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"os"
+	"os/signal"
 	"strconv"
 	"strings"
+	"time"
 
 	datasource "github.com/tomasvalettini/latte/coffeeshop/data/data-source"
 	carafepath "github.com/tomasvalettini/latte/coffeeshop/data/data-source/path"
 	datamodel "github.com/tomasvalettini/latte/coffeeshop/data/model"
+	"github.com/tomasvalettini/latte/spinner"
 )
 
 // default blend (collection) that is `latte` flavoured
@@ -29,33 +35,101 @@ func NewCoffeeShopController(path carafepath.CarafePath) *CoffeeShopController {
 	}
 }
 
-func (csc *CoffeeShopController) ListBlends(bi *BlendIdentifier) {
-	blends := csc.dataSource.Load()
+func long_running_process(ctx context.Context) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
 
-	if len(blends) == 0 {
-		fmt.Println("Nothing to show yet!")
+	fmt.Fprintln(os.Stderr, "Starting process...")
+	time.Sleep(5 * time.Second) // Your actual work here
+
+	return nil
+}
+
+func (csc *CoffeeShopController) ListBlends(bi *Identifier) {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
+	err := spinner.Run(ctx, "Loading ", func(ctx context.Context) error {
+		return long_running_process(ctx)
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Fprintln(os.Stderr, "\rProcess complete!      ")
+	// blends := csc.dataSource.Load()
+	//
+	//	if len(blends) == 0 {
+	//		fmt.Println("Nothing to show yet!")
+	//		return
+	//	}
+	//
+	//	if bi != nil {
+	//		bi = bi.Validate()
+	//	}
+	//
+	//	if bi == nil {
+	//		// show all blends summary
+	//		printBlends(blends)
+	//		return
+	//	}
+	//
+	//	if !bi.IsValid() {
+	//		fmt.Println("Blend id or Blend title should be specified")
+	//		return
+	//	}
+	//
+	// printBlendDrips(*getBlendFromIdentifier(blends, bi))
+}
+
+func (csc *CoffeeShopController) AddToBlends2(bi *Identifier, di *Identifier) {
+	if !di.IsTitleValid() {
+		fmt.Println("Missing text for drip. Please specify the text to add the drip.")
 		return
 	}
+
+	blends := csc.dataSource.Load()
+	var foundBlend *datamodel.Blend
 
 	if bi != nil {
 		bi = bi.Validate()
 	}
 
 	if bi == nil {
-		// show all blends summary
-		printBlends(blends)
-		return
+		foundBlend = getOrCreateBlendFromIdentifier(
+			blends,
+			nil,
+		)
+	} else {
+		foundBlend = getOrCreateBlendFromIdentifier(blends, bi)
 	}
 
-	if !bi.IsValid() {
-		fmt.Println("Blend id or Blend title should be specified")
-		return
+	// create method to validate dripId (>= 0)
+	// and to make sure it's in the blend chosen
+	// if t
+
+	// title is valid, lets check if id is good.
+	dripId := datamodel.GetNextId(foundBlend.Drips)
+	if di.IsIdValid() {
+		dripId = di.Id
 	}
 
-	printBlendDrips(*getBlendFromIdentifier(blends, bi))
+	newDrip := datamodel.Drip{
+		Id:   dripId,
+		Text: di.Title,
+	}
+
+	foundBlend.Drips = append(foundBlend.Drips, newDrip)
+	blends = addBlendToBlendList(blends, foundBlend)
+
+	csc.dataSource.Save(blends)
 }
 
-func (csc *CoffeeShopController) AddToBlends(bi *BlendIdentifier, dripText string) {
+func (csc *CoffeeShopController) AddToBlends(bi *Identifier, dripText string) {
 	if dripText == "" {
 		fmt.Println("Missing text for drip. Please specify the text to add the drip.")
 		return
@@ -88,13 +162,13 @@ func (csc *CoffeeShopController) AddToBlends(bi *BlendIdentifier, dripText strin
 	csc.dataSource.Save(blends)
 }
 
-func (csc *CoffeeShopController) DeleteFromBlends(bi *BlendIdentifier, dripId int) {
+func (csc *CoffeeShopController) DeleteFromBlends(bi *Identifier, dripId int) {
 	if bi != nil {
 		bi = bi.Validate()
 	}
 	// if bi is nil, default to house blend
 	if bi == nil {
-		bi = &BlendIdentifier{
+		bi = &Identifier{
 			Id:    HOUSE_BLEND_ID,
 			Title: HOUSE_BLEND_TITLE,
 		}
@@ -155,7 +229,7 @@ func (csc *CoffeeShopController) DeleteFromBlends(bi *BlendIdentifier, dripId in
 	fmt.Printf("Drip with id %d deleted successfully.\n", dripId)
 }
 
-func (csc *CoffeeShopController) UpdateDripInBlend(bi *BlendIdentifier, dripId int, dripText string) {
+func (csc *CoffeeShopController) UpdateDripInBlend(bi *Identifier, dripId int, dripText string) {
 	if bi != nil {
 		bi = bi.Validate()
 	}
@@ -248,7 +322,7 @@ func addBlendToBlendList(blends []datamodel.Blend, foundBlend *datamodel.Blend) 
 	return blends
 }
 
-func getOrCreateBlendFromIdentifier(blends []datamodel.Blend, bi *BlendIdentifier) *datamodel.Blend {
+func getOrCreateBlendFromIdentifier(blends []datamodel.Blend, bi *Identifier) *datamodel.Blend {
 	foundBlend := getBlendFromIdentifier(blends, bi)
 	if foundBlend != nil {
 		return foundBlend
@@ -276,7 +350,7 @@ func getOrCreateBlendFromIdentifier(blends []datamodel.Blend, bi *BlendIdentifie
 	}
 }
 
-func getBlendFromIdentifier(blends []datamodel.Blend, bi *BlendIdentifier) *datamodel.Blend {
+func getBlendFromIdentifier(blends []datamodel.Blend, bi *Identifier) *datamodel.Blend {
 	if bi == nil {
 		return nil
 	}

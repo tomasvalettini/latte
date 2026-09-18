@@ -63,8 +63,8 @@ func TestAddToBlends_CreatesNewBlend(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Add drips to a new blend
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Espresso"}, "shot 1")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Espresso"}, "shot 2")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Espresso"}, "shot 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Espresso"}, "shot 2")
 
 	blends := tc.dataSource.Load()
 	espressoBlend := findBlendByTitle(blends, "Espresso")
@@ -88,11 +88,11 @@ func TestAddToBlends_AddsToExistingBlendByTitle(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Create a blend
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Cappuccino"}, "drip 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Cappuccino"}, "drip 1")
 
 	// Add more drips using the same blend identifier
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Cappuccino"}, "drip 2")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Cappuccino"}, "drip 3")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Cappuccino"}, "drip 2")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Cappuccino"}, "drip 3")
 
 	blends := tc.dataSource.Load()
 	cappuccinoBlend := findBlendByTitle(blends, "Cappuccino")
@@ -125,9 +125,9 @@ func TestAddToBlends_AutoGeneratesDripIds(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Add drips to a blend
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Test Blend"}, "drip 1")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Test Blend"}, "drip 2")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Test Blend"}, "drip 3")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Test Blend"}, "drip 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Test Blend"}, "drip 2")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Test Blend"}, "drip 3")
 
 	blends := tc.dataSource.Load()
 	testBlend := findBlendByTitle(blends, "Test Blend")
@@ -178,8 +178,8 @@ func TestListBlends_WithNilIdentifier(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add multiple blends
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Espresso"}, "shot 1")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Cappuccino"}, "milk 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Espresso"}, "shot 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Cappuccino"}, "milk 1")
 	tc.AddToBlends(nil, "house drip")
 
 	// Call ListBlends with nil to list all
@@ -216,12 +216,12 @@ func TestListBlends_ByTitle(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add multiple blends
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Espresso"}, "shot 1")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Espresso"}, "shot 2")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Cappuccino"}, "milk 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Espresso"}, "shot 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Espresso"}, "shot 2")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Cappuccino"}, "milk 1")
 
 	// Call ListBlends for specific blend
-	tc.ListBlends(&BlendIdentifier{Id: -1, Title: "Espresso"})
+	tc.ListBlends(&Identifier{Id: -1, Title: "Espresso"})
 
 	// Verify the blend exists and has the right drips
 	blends := tc.dataSource.Load()
@@ -246,8 +246,8 @@ func TestListBlends_ById(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add blends
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Espresso"}, "shot 1")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Cappuccino"}, "milk 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Espresso"}, "shot 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Cappuccino"}, "milk 1")
 
 	blends := tc.dataSource.Load()
 	espressoBlend := findBlendByTitle(blends, "Espresso")
@@ -263,7 +263,7 @@ func TestListBlends_ById(t *testing.T) {
 	)
 
 	// Call ListBlends with ID
-	tc.ListBlends(&BlendIdentifier{Id: espressoId, Title: ""})
+	tc.ListBlends(&Identifier{Id: espressoId, Title: ""})
 
 	// Verify the blend still exists
 	blends = tc.dataSource.Load()
@@ -293,10 +293,10 @@ func TestListBlends_WithInvalidIdentifier(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a blend
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Espresso"}, "shot 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Espresso"}, "shot 1")
 
 	// Call ListBlends with invalid identifier (both id and title empty/invalid)
-	tc.ListBlends(&BlendIdentifier{Id: -999, Title: ""})
+	tc.ListBlends(&Identifier{Id: -999, Title: ""})
 
 	// Just verify that blends still exist (no side effects)
 	blends := tc.dataSource.Load()
@@ -318,9 +318,9 @@ func TestDeleteFromBlends_DeleteWholeBlend(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a blend with multiple drips
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Test Blend"}, "drip 1")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Test Blend"}, "drip 2")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Test Blend"}, "drip 3")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Test Blend"}, "drip 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Test Blend"}, "drip 2")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Test Blend"}, "drip 3")
 
 	blends := tc.dataSource.Load()
 
@@ -338,7 +338,7 @@ func TestDeleteFromBlends_DeleteWholeBlend(t *testing.T) {
 	w.Close()
 
 	// Delete drip with id 0 (negative dripId means delete specific drip)
-	tc.DeleteFromBlends(&BlendIdentifier{Id: -1, Title: "Test Blend"}, -1)
+	tc.DeleteFromBlends(&Identifier{Id: -1, Title: "Test Blend"}, -1)
 
 	// Restore stdin
 	os.Stdin = oldStdin
@@ -363,11 +363,11 @@ func TestDeleteFromBlends_DeleteDripWithNegativeId(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add blends and drips
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Espresso"}, "shot 1")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Espresso"}, "shot 2")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Espresso"}, "shot 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Espresso"}, "shot 2")
 
 	// Delete the first drip (id 0)
-	tc.DeleteFromBlends(&BlendIdentifier{Id: -1, Title: "Espresso"}, 0)
+	tc.DeleteFromBlends(&Identifier{Id: -1, Title: "Espresso"}, 0)
 
 	blends := tc.dataSource.Load()
 	espressoBlend := findBlendByTitle(blends, "Espresso")
@@ -396,10 +396,10 @@ func TestDeleteFromBlends_DripNotFound(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a blend with a drip
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Cappuccino"}, "drip 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Cappuccino"}, "drip 1")
 
 	// Try to delete a drip that doesn't exist (id 999)
-	tc.DeleteFromBlends(&BlendIdentifier{Id: -1, Title: "Cappuccino"}, -999)
+	tc.DeleteFromBlends(&Identifier{Id: -1, Title: "Cappuccino"}, -999)
 
 	// Verify the blend and drip still exist
 	blends := tc.dataSource.Load()
@@ -424,10 +424,10 @@ func TestDeleteFromBlends_BlendNotFound(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a blend
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Real Blend"}, "drip 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Real Blend"}, "drip 1")
 
 	// Try to delete from a non-existent blend (use 0 as dripId to delete specific drip)
-	tc.DeleteFromBlends(&BlendIdentifier{Id: -1, Title: "Non-existent Blend"}, 0)
+	tc.DeleteFromBlends(&Identifier{Id: -1, Title: "Non-existent Blend"}, 0)
 
 	// Verify the original blend is unchanged
 	blends := tc.dataSource.Load()
@@ -484,13 +484,13 @@ func TestDeleteFromBlends_DeleteMultipleDrips(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add multiple drips
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Multi Blend"}, "drip 1")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Multi Blend"}, "drip 2")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Multi Blend"}, "drip 3")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Multi Blend"}, "drip 4")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Multi Blend"}, "drip 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Multi Blend"}, "drip 2")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Multi Blend"}, "drip 3")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Multi Blend"}, "drip 4")
 
 	// Delete first drip (id 0)
-	tc.DeleteFromBlends(&BlendIdentifier{Id: -1, Title: "Multi Blend"}, 0)
+	tc.DeleteFromBlends(&Identifier{Id: -1, Title: "Multi Blend"}, 0)
 
 	blends := tc.dataSource.Load()
 	multiBlend := findBlendByTitle(blends, "Multi Blend")
@@ -505,7 +505,7 @@ func TestDeleteFromBlends_DeleteMultipleDrips(t *testing.T) {
 	)
 
 	// Delete another drip (id 1 from the remaining)
-	tc.DeleteFromBlends(&BlendIdentifier{Id: -1, Title: "Multi Blend"}, 1)
+	tc.DeleteFromBlends(&Identifier{Id: -1, Title: "Multi Blend"}, 1)
 
 	blends = tc.dataSource.Load()
 	multiBlend = findBlendByTitle(blends, "Multi Blend")
@@ -528,7 +528,7 @@ func TestDeleteFromBlends_EmptyBlend(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Create a blend with no drips (indirectly via data source manipulation)
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Empty Blend"}, "temp drip")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Empty Blend"}, "temp drip")
 
 	// Mock stdin for the first confirmation prompt to delete the blend
 	oldStdin := os.Stdin
@@ -537,7 +537,7 @@ func TestDeleteFromBlends_EmptyBlend(t *testing.T) {
 	w.WriteString("yes\n")
 	w.Close()
 
-	tc.DeleteFromBlends(&BlendIdentifier{Id: -1, Title: "Empty Blend"}, -1)
+	tc.DeleteFromBlends(&Identifier{Id: -1, Title: "Empty Blend"}, -1)
 
 	// Restore stdin
 	os.Stdin = oldStdin
@@ -561,12 +561,12 @@ func TestUpdateDripInBlend_SuccessfulUpdate(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a blend with multiple drips
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Update Test Blend"}, "original drip 1")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Update Test Blend"}, "original drip 2")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Update Test Blend"}, "original drip 3")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Update Test Blend"}, "original drip 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Update Test Blend"}, "original drip 2")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Update Test Blend"}, "original drip 3")
 
 	// Update the second drip (id 1)
-	tc.UpdateDripInBlend(&BlendIdentifier{Id: -1, Title: "Update Test Blend"}, 1, "updated drip 2")
+	tc.UpdateDripInBlend(&Identifier{Id: -1, Title: "Update Test Blend"}, 1, "updated drip 2")
 
 	blends := tc.dataSource.Load()
 	testBlend := findBlendByTitle(blends, "Update Test Blend")
@@ -592,10 +592,10 @@ func TestUpdateDripInBlend_WithInvalidDripId(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a blend with a drip
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Negative ID Blend"}, "test drip")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Negative ID Blend"}, "test drip")
 
 	// Try to update with negative drip ID and non-empty text (should fail)
-	tc.UpdateDripInBlend(&BlendIdentifier{Id: -1, Title: "Negative ID Blend"}, -1, "new text")
+	tc.UpdateDripInBlend(&Identifier{Id: -1, Title: "Negative ID Blend"}, -1, "new text")
 
 	// Verify the drip was not changed
 	blends := tc.dataSource.Load()
@@ -620,7 +620,7 @@ func TestUpdateDripInBlend_UpdatesBlendTitle(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a blend
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Old Title"}, "drip 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Old Title"}, "drip 1")
 
 	// Get the blend ID to verify title update
 	blends := tc.dataSource.Load()
@@ -630,7 +630,7 @@ func TestUpdateDripInBlend_UpdatesBlendTitle(t *testing.T) {
 	fmt.Println(blendId)
 
 	// Update blend title using negative dripId and empty dripText
-	tc.UpdateDripInBlend(&BlendIdentifier{Id: blendId, Title: "New Title"}, -1, "")
+	tc.UpdateDripInBlend(&Identifier{Id: blendId, Title: "New Title"}, -1, "")
 
 	// Verify the blend title was updated
 	blends = tc.dataSource.Load()
@@ -660,10 +660,10 @@ func TestUpdateDripInBlend_UpdateTitleBlendNotFound(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a real blend
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Real Blend"}, "drip 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Real Blend"}, "drip 1")
 
 	// Try to update title of non-existent blend
-	tc.UpdateDripInBlend(&BlendIdentifier{Id: -1, Title: "Non-existent Blend"}, -1, "")
+	tc.UpdateDripInBlend(&Identifier{Id: -1, Title: "Non-existent Blend"}, -1, "")
 
 	// Verify real blend is unchanged
 	blends := tc.dataSource.Load()
@@ -686,10 +686,10 @@ func TestUpdateDripInBlend_WithEmptyText(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a blend with a drip
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Empty Text Blend"}, "original drip")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Empty Text Blend"}, "original drip")
 
 	// Try to update with empty text
-	tc.UpdateDripInBlend(&BlendIdentifier{Id: -1, Title: "Empty Text Blend"}, 0, "")
+	tc.UpdateDripInBlend(&Identifier{Id: -1, Title: "Empty Text Blend"}, 0, "")
 
 	// Verify the drip was not changed
 	blends := tc.dataSource.Load()
@@ -742,10 +742,10 @@ func TestUpdateDripInBlend_BlendNotFound(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a real blend
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Real Blend"}, "drip 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Real Blend"}, "drip 1")
 
 	// Try to update drip in non-existent blend
-	tc.UpdateDripInBlend(&BlendIdentifier{Id: -1, Title: "Non-existent Blend"}, 0, "new text")
+	tc.UpdateDripInBlend(&Identifier{Id: -1, Title: "Non-existent Blend"}, 0, "new text")
 
 	// Verify real blend is unchanged
 	blends := tc.dataSource.Load()
@@ -770,10 +770,10 @@ func TestUpdateDripInBlend_DripNotFound(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a blend with a drip (id 0)
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Not Found Blend"}, "drip 1")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Not Found Blend"}, "drip 1")
 
 	// Try to update drip with non-existent ID
-	tc.UpdateDripInBlend(&BlendIdentifier{Id: -1, Title: "Not Found Blend"}, 999, "new text")
+	tc.UpdateDripInBlend(&Identifier{Id: -1, Title: "Not Found Blend"}, 999, "new text")
 
 	// Verify the drip was not changed
 	blends := tc.dataSource.Load()
@@ -798,7 +798,7 @@ func TestUpdateDripInBlend_ByBlendId(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a blend with a drip
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "ID Based Blend"}, "original")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "ID Based Blend"}, "original")
 
 	// Get the blend ID
 	blends := tc.dataSource.Load()
@@ -806,7 +806,7 @@ func TestUpdateDripInBlend_ByBlendId(t *testing.T) {
 	blendId := idBasedBlend.Id
 
 	// Update using blend ID instead of title
-	tc.UpdateDripInBlend(&BlendIdentifier{Id: blendId, Title: ""}, 0, "updated by id")
+	tc.UpdateDripInBlend(&Identifier{Id: blendId, Title: ""}, 0, "updated by id")
 
 	// Verify the drip was updated
 	blends = tc.dataSource.Load()
@@ -837,12 +837,12 @@ func TestUpdateDripInBlend_UpdateFirstDrip(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a blend with multiple drips
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Multi Blend"}, "first drip")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Multi Blend"}, "second drip")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Multi Blend"}, "third drip")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Multi Blend"}, "first drip")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Multi Blend"}, "second drip")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Multi Blend"}, "third drip")
 
 	// Update the first drip (id 0)
-	tc.UpdateDripInBlend(&BlendIdentifier{Id: -1, Title: "Multi Blend"}, 0, "updated first")
+	tc.UpdateDripInBlend(&Identifier{Id: -1, Title: "Multi Blend"}, 0, "updated first")
 
 	blends := tc.dataSource.Load()
 	multiBlend := findBlendByTitle(blends, "Multi Blend")
@@ -870,12 +870,12 @@ func TestUpdateDripInBlend_UpdateLastDrip(t *testing.T) {
 	tc := getTestCoffeeShopController()
 
 	// Setup: Add a blend with multiple drips
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Last Drip Blend"}, "first")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Last Drip Blend"}, "second")
-	tc.AddToBlends(&BlendIdentifier{Id: -1, Title: "Last Drip Blend"}, "third")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Last Drip Blend"}, "first")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Last Drip Blend"}, "second")
+	tc.AddToBlends(&Identifier{Id: -1, Title: "Last Drip Blend"}, "third")
 
 	// Update the last drip (id 2)
-	tc.UpdateDripInBlend(&BlendIdentifier{Id: -1, Title: "Last Drip Blend"}, 2, "updated third")
+	tc.UpdateDripInBlend(&Identifier{Id: -1, Title: "Last Drip Blend"}, 2, "updated third")
 
 	blends := tc.dataSource.Load()
 	lastDripBlend := findBlendByTitle(blends, "Last Drip Blend")

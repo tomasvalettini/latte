@@ -17,12 +17,12 @@ var listCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		cPath := &carafepath.LocalCarafePath{}
 		coffeeShopController := controller.NewCoffeeShopController(cPath)
-		bi := &controller.BlendIdentifier{
-			Id:    flagBlendId,
-			Title: flagBlendName,
+		blendIndentifier := &controller.Identifier{
+			Id:    flagBlendId,   // -1 default
+			Title: flagBlendName, // "" default
 		}
 
-		coffeeShopController.ListBlends(bi)
+		coffeeShopController.ListBlends(blendIndentifier)
 	},
 }
 

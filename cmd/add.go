@@ -20,7 +20,7 @@ var addCmd = &cobra.Command{
 			coffeeShopController := controller.NewCoffeeShopController(cPath)
 			text := args[0]
 
-			coffeeShopController.AddToBlends(&controller.BlendIdentifier{
+			coffeeShopController.AddToBlends(&controller.Identifier{
 				Id:    flagBlendId,
 				Title: flagBlendName,
 			}, text)
@@ -43,4 +43,5 @@ func init() {
 
 	addCmd.Flags().StringVar(&flagBlendName, FLAG_BLEND, DEFAULT_FLAG_BLEND_NAME, "The blend to assign this drip to.")
 	addCmd.Flags().IntVar(&flagBlendId, FLAG_BLEND_ID, DEFAULT_FLAG_ID, "The ID of the blend to assign this drip to.")
+	addCmd.Flags().IntVar(&flagDripId, FLAG_DRIP_ID, DEFAULT_FLAG_ID, "The ID of the drip to delete.")
 }
