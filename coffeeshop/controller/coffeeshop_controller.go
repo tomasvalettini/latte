@@ -29,13 +29,15 @@ func NewCoffeeShopController(path carafepath.CarafePath) *CoffeeShopController {
 	}
 }
 
-func (csc *CoffeeShopController) ListBlends(bi *BlendIdentifier) {
+func (csc *CoffeeShopController) ListBlends(bi *Identifier) {
 	blends := csc.dataSource.Load()
 
 	if len(blends) == 0 {
 		fmt.Println("Nothing to show yet!")
 		return
 	}
+
+	datamodel.SortBlendsById(blends)
 
 	if bi != nil {
 		bi = bi.Validate()
@@ -55,46 +57,60 @@ func (csc *CoffeeShopController) ListBlends(bi *BlendIdentifier) {
 	printBlendDrips(*getBlendFromIdentifier(blends, bi))
 }
 
-func (csc *CoffeeShopController) AddToBlends(bi *BlendIdentifier, dripText string) {
-	if dripText == "" {
+func (csc *CoffeeShopController) AddToBlendsV2(blendIdentifier *Identifier, dripIdentifier *Identifier) {
+	if dripIdentifier.Title == "" {
 		fmt.Println("Missing text for drip. Please specify the text to add the drip.")
 		return
 	}
 
 	blends := csc.dataSource.Load()
-	var foundBlend *datamodel.Blend
 
-	if bi != nil {
-		bi = bi.Validate()
+	if len(blends) > 0 {
+		datamodel.SortBlendsById(blends)
 	}
 
-	if bi == nil {
+	var foundBlend *datamodel.Blend
+
+	if blendIdentifier != nil {
+		blendIdentifier = blendIdentifier.Validate()
+	}
+
+	if blendIdentifier == nil {
 		foundBlend = getOrCreateBlendFromIdentifier(
 			blends,
 			nil,
 		)
 	} else {
-		foundBlend = getOrCreateBlendFromIdentifier(blends, bi)
+		foundBlend = getOrCreateBlendFromIdentifier(blends, blendIdentifier)
 	}
 
 	newDrip := datamodel.Drip{
 		Id:   datamodel.GetNextId(foundBlend.Drips),
-		Text: dripText,
+		Text: dripIdentifier.Title,
 	}
 
-	foundBlend.Drips = append(foundBlend.Drips, newDrip)
-	blends = addBlendToBlendList(blends, foundBlend)
+	datamodel.SortDripsById(foundBlend.Drips)
 
+	if dripIdentifier.Id > 0 {
+		newIndex := datamodel.FindIndexFromId(foundBlend.Drips, dripIdentifier.Id)
+		newDrip.Id = dripIdentifier.Id
+		datamodel.UpdateDripsIds(foundBlend.Drips, newIndex, newDrip.Id)
+		foundBlend.Drips = append(foundBlend.Drips[:newIndex], append([]datamodel.Drip{newDrip}, foundBlend.Drips[newIndex:]...)...)
+	} else {
+		foundBlend.Drips = append(foundBlend.Drips, newDrip)
+	}
+
+	blends = addBlendToBlendList(blends, foundBlend)
 	csc.dataSource.Save(blends)
 }
 
-func (csc *CoffeeShopController) DeleteFromBlends(bi *BlendIdentifier, dripId int) {
+func (csc *CoffeeShopController) DeleteFromBlends(bi *Identifier, dripId int) {
 	if bi != nil {
 		bi = bi.Validate()
 	}
 	// if bi is nil, default to house blend
 	if bi == nil {
-		bi = &BlendIdentifier{
+		bi = &Identifier{
 			Id:    HOUSE_BLEND_ID,
 			Title: HOUSE_BLEND_TITLE,
 		}
@@ -155,7 +171,7 @@ func (csc *CoffeeShopController) DeleteFromBlends(bi *BlendIdentifier, dripId in
 	fmt.Printf("Drip with id %d deleted successfully.\n", dripId)
 }
 
-func (csc *CoffeeShopController) UpdateDripInBlend(bi *BlendIdentifier, dripId int, dripText string) {
+func (csc *CoffeeShopController) UpdateDripInBlend(bi *Identifier, dripId int, dripText string) {
 	if bi != nil {
 		bi = bi.Validate()
 	}
@@ -248,7 +264,7 @@ func addBlendToBlendList(blends []datamodel.Blend, foundBlend *datamodel.Blend) 
 	return blends
 }
 
-func getOrCreateBlendFromIdentifier(blends []datamodel.Blend, bi *BlendIdentifier) *datamodel.Blend {
+func getOrCreateBlendFromIdentifier(blends []datamodel.Blend, bi *Identifier) *datamodel.Blend {
 	foundBlend := getBlendFromIdentifier(blends, bi)
 	if foundBlend != nil {
 		return foundBlend
@@ -276,7 +292,7 @@ func getOrCreateBlendFromIdentifier(blends []datamodel.Blend, bi *BlendIdentifie
 	}
 }
 
-func getBlendFromIdentifier(blends []datamodel.Blend, bi *BlendIdentifier) *datamodel.Blend {
+func getBlendFromIdentifier(blends []datamodel.Blend, bi *Identifier) *datamodel.Blend {
 	if bi == nil {
 		return nil
 	}
@@ -323,7 +339,7 @@ func printBlends(blends []datamodel.Blend) {
 			noun = "drip"
 		}
 
-		idWidth := datamodel.MaxIdWidth(b.Drips)
+		idWidth := datamodel.MaxBlendIdWidth(blends)
 		formatted := fmt.Sprintf("  [%*d] %s (%d %s)", idWidth, b.Id, b.Title, len(b.Drips), noun)
 
 		if len(formatted) > maxWidth {
@@ -358,7 +374,7 @@ func printBlendDrips(blend datamodel.Blend) {
 	width := len(blend.Title) + blendIdWidth + 3 + (margin_width * 2)
 	bannerLine := strings.Repeat("=", width)
 	offset := strings.Repeat(" ", margin_width)
-	idWidth := datamodel.MaxIdWidth(blend.Drips)
+	idWidth := datamodel.MaxDripIdWidth(blend.Drips)
 
 	fmt.Println(bannerLine)
 	fmt.Printf("%s%s (%d)%s\n", offset, blend.Title, blend.Id, offset)

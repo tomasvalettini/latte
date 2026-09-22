@@ -18,7 +18,7 @@ var deleteCmd = &cobra.Command{
 		cPath := &carafepath.LocalCarafePath{}
 		coffeeShopController := controller.NewCoffeeShopController(cPath)
 
-		coffeeShopController.DeleteFromBlends(&controller.BlendIdentifier{
+		coffeeShopController.DeleteFromBlends(&controller.Identifier{
 			Id:    flagBlendId,
 			Title: flagBlendName,
 		}, flagDripId)

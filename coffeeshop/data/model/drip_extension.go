@@ -1,42 +1,28 @@
 package datamodel
 
 import (
-	"log"
-	"strconv"
+	"github.com/tomasvalettini/latte/coffeeshop/data/common/data/extensions"
 )
 
 func GetNextId(drips []Drip) int {
-	var id int = -1
-
-	for _, drip := range drips {
-		if drip.Id > id {
-			id = drip.Id
-		}
-	}
-
-	return id + 1
+	return extensions.GetNextId(drips, func(d Drip) int { return d.Id }, -1)
 }
 
-func MaxIdWidth(drips []Drip) int {
-	maxWidth := 0
-
-	for _, drip := range drips {
-		w := len(strconv.Itoa(drip.Id))
-		if w > maxWidth {
-			maxWidth = w
-		}
-	}
-
-	return maxWidth
+func MaxDripIdWidth(drips []Drip) int {
+	return extensions.MaxIdWidth(drips, func(d Drip) int { return d.Id })
 }
 
+// this method assumes the drip array is sorted
 func FindIndexFromId(drips []Drip, id int) int {
-	for idx, drip := range drips {
-		if drip.Id == id {
-			return idx
-		}
-	}
+	return extensions.FindIndexFromId(drips, id, func(d Drip) int { return d.Id })
+}
 
-	log.Fatalln("Drip id was not found")
-	return -1
+func UpdateDripsIds(drips []Drip, idx int, idToAdd int) {
+	extensions.UpdateIds(drips, idx, idToAdd,
+		func(d Drip) int { return d.Id },
+		func(i int, id int) { drips[i].Id = id })
+}
+
+func SortDripsById(drips []Drip) {
+	extensions.SortById(drips, func(d Drip) int { return d.Id })
 }
