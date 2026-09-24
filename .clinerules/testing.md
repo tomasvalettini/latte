@@ -78,20 +78,27 @@ func TestIsValid(t *testing.T) {
 Tests controller methods end-to-end:
 
 ```go
-func TestAddToCollections_WithNilIdentifier(t *testing.T) {
-    tc := getTestMainController()
-    tc.AddToCollections(nil, "test entry 1")
+func TestAddToBlendsV2_WithNilIdentifiers(t *testing.T) {
+    ttc := getTestCoffeeShopController()
 
-    collections := tc.dataSource.Load()
-    defaultCollection := findCollectionByTitle(collections, DEFAULT_COLLECTION_TITLE)
+    ttc.AddToBlendsV2(nil, &Identifier{Id: -1, Title: "test drip 1"})
+    ttc.AddToBlendsV2(nil, &Identifier{Id: -1, Title: "test drip 2"})
+    ttc.AddToBlendsV2(nil, &Identifier{Id: -1, Title: "test drip 3"})
+
+    blends := ttc.dataSource.Load()
+    houseBlend := findBlendByTitle(blends, HOUSE_BLEND_TITLE)
+
+    dripsLen := len(houseBlend.Drips)
+    dripText := houseBlend.Drips[0].Text
 
     performTestChecks(map[string]bool{
-        "Default collection not found": defaultCollection == nil,
-        fmt.Sprintf("Expected 3 entries, got %d", len): entriesLen != 3,
+        "House blend not found":                                              houseBlend == nil,
+        fmt.Sprintf("Expected 3 drips, got %d", dripsLen):                    dripsLen != 3,
+        fmt.Sprintf("Expected first drip 'test drip 1', got '%s'", dripText): dripText != "test drip 1",
     })
 
     t.Cleanup(func() {
-        os.RemoveAll(projectpath.TMP)
+        os.RemoveAll(carafepath.TMP)
     })
 }
 ```
@@ -99,24 +106,24 @@ func TestAddToCollections_WithNilIdentifier(t *testing.T) {
 ### Shared Test Helpers (bottom of test files)
 
 ```go
-func getTestMainController() *MainController {
-    tp := projectpath.GetTestingProjectPath()
-    return NewMainController(tp)
+func getTestCoffeeShopController() *CoffeeShopController {
+	tp := carafepath.GetTestingCarafePath()
+	return NewCoffeeShopController(tp)
 }
 
 func performTestChecks(checks map[string]bool) {
-    for check, passed := range checks {
-        assert.Assert(!passed, check)
-    }
+	for check, passed := range checks {
+		assert.Assert(!passed, check)
+	}
 }
 
-func findCollectionByTitle(collections []datamodel.Collection, title string) *datamodel.Collection {
-    for i := range collections {
-        if collections[i].Title == title {
-            return &collections[i]
-        }
-    }
-    return nil
+func findBlendByTitle(blends []datamodel.Blend, title string) *datamodel.Blend {
+	for i := range blends {
+		if blends[i].Title == title {
+			return &blends[i]
+		}
+	}
+	return nil
 }
 ```
 
@@ -134,11 +141,11 @@ func findCollectionByTitle(collections []datamodel.Collection, title string) *da
 
 ### Examples from codebase:
 - `TestIsValid`, `TestIsIdValid`, `TestIsTitleValid`, `TestValidate`
-- `TestAddToCollections_WithNilIdentifier`, `TestAddToCollections_WithEmptyEntryText`
-- `TestAddToCollections_CreatesNewCollection`, `TestAddToCollections_AddsToExistingCollectionByTitle`
-- `TestDeleteFromCollections_DeleteEntryById`, `TestDeleteFromCollections_DeleteCollectionWithConfirmation`
-- `TestUpdateEntryInCollection_UpdateFirstEntry`, `TestUpdateEntryInCollection_UpdateLastEntry`, `TestUpdateEntryInCollection_UpdateByCollectionId`
-- `TestProjectDataSourceLogic`, `TestProjectDataSourceFailingFile`
+- `TestAddToBlendsV2_WithNilIdentifiers`, `TestAddToBlendsV2_WithEmptyDripText`
+- `TestAddToBlendsV2_CreatesNewBlend`
+- `TestDeleteFromBlends_DeleteWholeBlend`
+- `TestUpdateDripInBlend_UpdateFirstDrip`, `TestUpdateDripInBlend_UpdateLastDrip`, `TestUpdateDripInBlend_UpdateByBlendId`
+- `TestCoffeeShopDataSourceLogic`, `TestCoffeeShopDataSourceFailingFile`
 
 ## Test Data Cleanup Pattern
 
@@ -146,12 +153,12 @@ Always use `t.Cleanup()` for filesystem cleanup:
 
 ```go
 t.Cleanup(func() {
-    os.RemoveAll(projectpath.TMP)  // removes tmp/ directory
+    os.RemoveAll(carafepath.TMP)  // removes tmp/ directory
 })
 ```
 
-- `TestProjectPath` → test path `tmp/PROJECT_NAME/test.json`
-- `GetTestingProjectPath()` returns the `ProjectPath` interface
+- `TestCarafePath` → test path `tmp/latte/test.json`
+- `GetTestingCarafePath()` returns the `CarafePath` interface
 - Every controller test that writes data must call cleanup
 
 ## Validation Assertions

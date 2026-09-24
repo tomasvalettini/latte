@@ -1,7 +1,7 @@
 # Project Architecture
 
 ## Overview
-`PROJECT_NAME` is a terminal-based tracker built with Go, following a layered architecture with clear separation of concerns. CLI (Cobra) delegates to controllers for business logic, which use data sources for persistence and models for domain entities.
+`latte` is a terminal-based drip tracker built with Go, following a layered architecture with clear separation of concerns. CLI (Cobra) delegates to controllers for business logic, which use data sources for persistence and models for domain entities.
 
 ## Directory Structure
 
@@ -9,30 +9,34 @@
 PROJECT_ROOT/
 ├── cmd/                          # CLI command handlers (Cobra)
 │   ├── root.go                   # Root command, global flags, help
-│   ├── add.go                    # Add entry command
-│   ├── delete.go                 # Delete entry/collection command
-│   ├── list.go                   # List collections/entries command
-│   ├── update.go                 # Update entry command
+│   ├── add.go                    # Add drip command
+│   ├── delete.go                 # Delete drip/blend command
+│   ├── list.go                   # List blends/drips command
+│   ├── update.go                 # Update drip command
 │   └── constant.go               # Shared CLI constants
-├── core/                         # Core domain
+├── coffeeshop/                   # Core domain (coffee shop themed)
 │   ├── controller/              # Business logic
-│   │   ├── main_controller.go   # Main controller
+│   │   ├── coffeeshop_controller.go   # Coffee shop controller
 │   │   ├── identifier.go        # Identifier type
-│   │   └── *_test.go                  # Controller tests
+│   │   └── *_test.go            # Controller tests
 │   └── data/
+│       ├── common/
+│       │   └── data/
+│       │       └── extensions/
+│       │           └── list_extension.go  # Generic slice extensions (GetNextId, MaxIdWidth, FindIndexFromId, SortById, UpdateIds)
 │       ├── model/                # Domain entities
-│       │   ├── collection.go     # Collection { Id, Title, Entries[]Entry }
-│       │   ├── entry.go          # Entry { Id, Text }
-│       │   ├── collection_extension.go  # GetNextCollectionId
-│       │   ├── entry_extension.go   # GetNextId, MaxIdWidth
+│       │   ├── blend.go          # Blend { Id, Title, Drips[]Drip }
+│       │   ├── drip.go           # Drip { Id, Text }
+│       │   ├── blend_extension.go  # GetNextBlendId, MaxBlendIdWidth, SortBlendsById
+│       │   ├── drip_extension.go   # GetNextId, MaxDripIdWidth, FindIndexFromId, UpdateDripsIds, SortDripsById
 │       │   └── *_test.go
 │       └── data-source/         # Repository Pattern
 │           ├── data_source.go       # DataSource interface
-│           ├── project_data_source.go  # JSON file I/O
+│           ├── coffeeshop_data_source.go  # JSON file I/O
 │           └── path/
-│               ├── project_path.go    # ProjectPath interface
-│               ├── local_project_path.go  # Production path
-│               ├── test_project_path.go   # Test path
+│               ├── carafe_path.go    # CarafePath interface
+│               ├── local_carafe_path.go  # Production path ($HOME/.latte/carafes.json)
+│               ├── test_carafe_path.go   # Test path (tmp/latte/test.json)
 │               └── *_test.go
 ├── assert/                       # Custom assertions
 │   ├── assert.go                 # Assert(truth, msg)
@@ -54,40 +58,40 @@ PROJECT_ROOT/
                    │ delegates
                    ▼
 ┌────────────────────────────────────────┐
-│  Controller Layer (core/controller/) │
+│  Controller Layer (coffeeshop/controller/) │
 │  Business logic, validation, orchestration │
-│  MainController methods:           │
-│    * ListCollections(id *Identifier)     │
-│    * AddToCollections(id, entryText)          │
-│    * DeleteFromCollections(id, entryId)       │
-│    * UpdateEntryInCollection(id, entryId, text) │
+│  CoffeeShopController methods:         │
+│    * ListBlends(id *Identifier)     │
+│    * AddToBlendsV2(blendId, dripId)     │
+│    * DeleteFromBlends(id, dripId)       │
+│    * UpdateDripInBlend(id, dripId, text) │
 └──────────────────┬─────────────────────┘
                    │ uses
                    ▼
 ┌────────────────────────────────────────┐
 │  Data Layer                              │
-│  ├── Model: Collection, Entry (pure structs)  │
+│  ├── Model: Blend, Drip (pure structs)  │
 │  └── DataSource: Load/Save interface     │
-│       ProjectDataSource (JSON file)   │
-│       ProjectPath (file path abstraction) │
+│       CoffeeShopDataSource (JSON file)  │
+│       CarafePath (file path abstraction) │
 └────────────────────────────────────────┘
 ```
 
 ## Key Design Patterns
 
 ### Repository Pattern
-- `DataSource` interface: `Load() []Collection`, `Save([]Collection)`
-- `ProjectDataSource`: JSON file persistence
-- Controllers depend on interface → testable via `TestProjectPath`
+- `DataSource` interface: `Load() []Blend`, `Save([]Blend)`
+- `CoffeeShopDataSource`: JSON file persistence
+- Controllers depend on interface → testable via `TestCarafePath`
 
 ### Constructor Pattern
 ```go
-func NewMainController(path projectpath.ProjectPath) *MainController
-func NewProjectDataSource(path string) *ProjectDataSource
+func NewCoffeeShopController(path carafepath.CarafePath) *CoffeeShopController
+func NewCoffeeShopDataSource(path string) *CoffeeShopDataSource
 ```
 
 ### Identifier Pattern
-`Identifier` resolves collections by Id or Title:
+`Identifier` resolves blends by Id or Title:
 ```go
 type Identifier struct { Id int; Title string }
 func (id Identifier) IsValid() bool  // Id >= 0 OR Title != ""
@@ -95,14 +99,18 @@ func (id Identifier) Validate() *Identifier  // nil if invalid
 ```
 
 ### Dependency Injection for Paths
-`ProjectPath` interface allows implementation swapping:
-- `LocalProjectPath` → `$HOME/.PROJECT_ROOT/data.json`
-- `TestProjectPath` → `./tmp/PROJECT_ROOT/test.json`
+`CarafePath` interface allows implementation swapping:
+- `LocalCarafePath` → `$HOME/.latte/carafes.json`
+- `TestCarafePath` → `./tmp/latte/test.json`
 
-## Data Flow: Add Entry
+### Generic Extension Pattern
+- `extensions` package provides generic functions: `GetNextId`, `MaxIdWidth`, `FindIndexFromId`, `SortById`, `UpdateIds`
+- Model extension files (`blend_extension.go`, `drip_extension.go`) delegate to these generic functions
 
-1. `add.go` parses `--collection-id`, `--collection`, entry text
+## Data Flow: Add Drip
+
+1. `add.go` parses `--blend-id`, `--blend`, drip text
 2. Creates `Identifier` from flags
-3. `NewMainController(projectPath)` → controller
-4. `controller.AddToCollections(id, entryText)`
-5. Controller: validate text, load collections, find/create collection, append entry, save
+3. `NewCoffeeShopController(carafePath)` → controller
+4. `controller.AddToBlendsV2(id, entryText)`
+5. Controller: validate text, load blends, find/create blend, append drip, save
