@@ -20,7 +20,7 @@ var updateCmd = &cobra.Command{
 			coffeeShopController := controller.NewCoffeeShopController(cPath)
 			text := args[0]
 
-			coffeeShopController.UpdateDripInBlend(&controller.BlendIdentifier{
+			coffeeShopController.UpdateDripInBlend(&controller.Identifier{
 				Id:    flagBlendId,
 				Title: flagBlendName,
 			}, flagDripId, text)

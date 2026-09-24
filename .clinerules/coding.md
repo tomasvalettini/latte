@@ -7,10 +7,10 @@
 | Go               | 1.23.3      | Core language                    |
 | cobra            | v1.10.2     | CLI command framework            |
 | pflag            | v1.0.9      | Flag parsing (cobra dependency)  |
-| mousetrap         | v1.1.0      | Windows console (transitive)    |
+| mousetrap        |  v1.1.0     |  Windows console (transitive)    |
 | Standard library | (stdlib)    | `encoding/json`, `os`, `log`, `fmt`, `strconv`, `strings`, `path/filepath` |
 
-Module path: `github.com/tomasvalettini/latte`
+Module path: `github.com/<owner>/<project-name>`
 
 No external testing framework. Uses Go stdlib `testing` package + custom `assert` package.
 
@@ -18,49 +18,49 @@ No external testing framework. Uses Go stdlib `testing` package + custom `assert
 
 - **Format**: `go fmt ./...` (tabs for indentation, standard gofmt layout)
 - **Vet**: `go vet ./...` before commit
-- **Build**: `go build -o latte`
+- **Build**: `go build -o PROJECT_NAME`
 
 ## Naming Conventions
 
 ### Packages
-- Single-word, lowercase: `cmd`, `controller`, `datasource`, `datamodel`, `carafepath`, `assert`, `testutils`
+- Single-word, lowercase: `cmd`, `controller`, `datasource`, `datamodel`, `projectpath`, `assert`, `testutils`
 - Import with explicit aliases for nested paths:
   ```go
-  datasource "github.com/tomasvalettini/latte/coffeeshop/data/data-source"
-  carafepath "github.com/tomasvalettini/latte/coffeeshop/data/data-source/path"
-  datamodel "github.com/tomasvalettini/latte/coffeeshop/data/model"
-  testutils "github.com/tomasvalettini/latte/test-utils"
+  datasource "github.com/<owner>/<project-name>/core/data/data-source"
+  projectpath "github.com/<owner>/<project-name>/core/data/data-source/path"
+  datamodel "github.com/<owner>/<project-name>/core/data/model"
+  testutils "github.com/<owner>/<project-name>/test-utils"
   ```
 
 ### Types & Structs
-- **PascalCase** for exported types: `CoffeeShopController`, `BlendIdentifier`, `Blend`, `Drip`, `LocalCarafePath`, `TestCarafePath`
+- **PascalCase** for exported types: `MainController`, `Identifier`, `Collection`, `Entry`, `LocalProjectPath`, `TestProjectPath`
 - **Short receiver names** (1-3 chars):
-  - `csc` for `*CoffeeShopController`
-  - `bi` for `BlendIdentifier`
-  - `coffeeShop` for `*CoffeeShopDataSource`
-  - `ltp` for `*LocalCarafePath`
-  - `ttp` for `*TestCarafePath`
+  - `mc` for `*MainController`
+  - `id` for `Identifier`
+  - `projectData` for `*ProjectDataSource`
+  - `lpp` for `*LocalProjectPath`
+  - `tpp` for `*TestProjectPath`
 
 ### Constants
-- **UPPER_SNAKE_CASE** for module-level constants: `HOUSE_BLEND_TITLE`, `HOUSE_BLEND_ID`, `LATTE_HOME_DIRECTORY`, `CARAFE_FILE_NAME`, `TMP`, `TEST_CARAFE_FILE`, `BE_CRASHER`
+- **UPPER_SNAKE_CASE** for module-level constants: `DEFAULT_COLLECTION_TITLE`, `DEFAULT_COLLECTION_ID`, `PROJECT_HOME_DIRECTORY`, `DATA_FILE_NAME`, `TMP`, `TEST_DATA_FILE`, `BE_CRASHER`
 - File-scope constants use same convention: `margin_width = 6`
 
 ### Variables & Functions
-- **PascalCase** for exported functions: `ListBlends`, `AddToBlends`, `GetNextId`, `NewCoffeeShopController`
-- **camelCase** for unexported: `getBlendFromIdentifier`, `printBlends`, `getOrCreateBlendFromIdentifier`, `addBlendToBlendList`, `performTestChecks`, `findBlendByTitle`
+- **PascalCase** for exported functions: `ListCollections`, `AddToCollections`, `GetNextId`, `NewMainController`
+- **camelCase** for unexported: `getCollectionFromIdentifier`, `printCollections`, `getOrCreateCollectionFromIdentifier`, `addCollectionToCollectionList`, `performTestChecks`, `findCollectionByTitle`
 - Struct field names PascalCase with snake-case JSON tags:
-  ```go
-  type Blend struct {
+    ```go
+  type Collection struct {
       Id    int    `json:"id"`
       Title string `json:"text"`   // Note: "text" not "title"
-      Drips []Drip `json:"drips"`
+      Entries []Entry `json:"entries"`
   }
   ```
-- Test helper functions camelCase at bottom of test file: `getTestCoffeeShopController`, `getTestBlends`, `performTest`
+- Test helper functions camelCase at bottom of test file: `getTestMainController`, `getTestCollections`, `performTest`
 
 ### Test Types & Cases
-- Test case struct prefix with `Test`: `TestBlendIdentifier{ bi, expected }`
-- Test functions prefixed with `Test`: `TestIsValid`, `TestAddToBlends_WithNilIdentifier`
+- Test case struct prefix with `Test`: `TestIdentifier{ id, expected }`
+- Test functions prefixed with `Test`: `TestIsValid`, `TestAddToCollections_WithNilIdentifier`
 - Subtests via `t.Run(name, func(t *testing.T){...})` with descriptive `fmt.Sprintf` names
 - Naming pattern: `TestXxx` for basic, `TestXxx_YyyZzz` for scenarios
 
@@ -74,33 +74,33 @@ No external testing framework. Uses Go stdlib `testing` package + custom `assert
 
 ### Struct Initialization
 - Prefer named fields in struct literals:
-  ```go
-  BlendIdentifier{Id: -1, Title: "Espresso"}
-  datamodel.Drip{Id: 0, Text: "test drip 1"}
+    ```go
+  Identifier{Id: -1, Title: "Example"}
+  datamodel.Entry{Id: 0, Text: "test entry 1"}
   ```
-- Constructors return pointer to struct: `&CoffeeShopController{...}`
+- Constructors return pointer to struct: `&MainController{...}`
 
 ### Validation Methods
 - Type-specific validation methods on the type:
-  ```go
-  func (bi BlendIdentifier) IsValid() bool
-  func (bi BlendIdentifier) IsIdValid() bool
-  func (bi BlendIdentifier) IsTitleValid() bool
-  func (bi BlendIdentifier) Validate() *BlendIdentifier
+    ```go
+  func (id Identifier) IsValid() bool
+  func (id Identifier) IsIdValid() bool
+  func (id Identifier) IsTitleValid() bool
+  func (id Identifier) Validate() *Identifier
   ```
 - Methods use value receivers for immutable operations
 
 ### Slices & Returns
-- Return empty slices, not nil: `return []datamodel.Blend{}`
+- Return empty slices, not nil: `return []datamodel.Collection{}`
 - Use `append` for additions; iterate with `for i, x := range slice` when index needed
 - Use `for _, x := range slice` when only values needed
 
 ### Constants at Top of File
 Group module constants at file top with comments:
 ```go
-// default blend (collection) that is `latte` flavoured
-const HOUSE_BLEND_TITLE = "House Blend"
-const HOUSE_BLEND_ID = 0
+// default collection that is PROJECT_NAME flavoured
+const DEFAULT_COLLECTION_TITLE = "Default Collection"
+const DEFAULT_COLLECTION_ID = 0
 
 const margin_width = 6
 ```
@@ -124,14 +124,14 @@ const margin_width = 6
 
 ### Exporting
 - Only export what the CLI or other packages need
-- Controller exports `ListBlends`, `AddToBlends`, `DeleteFromBlends`, `UpdateDripInBlend`
-- Model exports `Blend`, `Drip`, `GetNextBlendId`, `GetNextId`, `MaxIdWidth`, `FindIndexFromId`
-- Unexported helpers stay in same package: `getBlendFromIdentifier`, `printBlends`
+- Controller exports `ListCollections`, `AddToCollections`, `DeleteFromCollections`, `UpdateEntryInCollection`
+- Model exports `Collection`, `Entry`, `GetNextCollectionId`, `GetNextId`, `MaxIdWidth`, `FindIndexFromId`
+- Unexported helpers stay in same package: `getCollectionFromIdentifier`, `printCollections`
 
 ## Common Pitfalls
 
-- **JSON tag mismatch**: `Blend.Title` serializes as `json:"text"` not `json:"title"`. Do not change without updating all consumers.
-- **House Blend special case**: `Id == 0` is the default/house blend. `GetNextBlendId` starts at 0 and returns `max+1`.
-- **Drip ID starts at 0**: `GetNextId` starts at -1 and returns `max+1`. First drip has `Id == 0`.
+- **JSON tag mismatch**: `Collection.Title` serializes as `json:"text"` not `json:"title"`. Do not change without updating all consumers.
+- **Default collection special case**: `Id == 0` is the default collection. `GetNextCollectionId` starts at 0 and returns `max+1`.
+- **Entry ID starts at 0**: `GetNextId` starts at -1 and returns `max+1`. First entry has `Id == 0`.
 - **Invalid identifier**: `Id < 0 AND Title == ""` → invalid. Use `Validate()` to get nil or pointer.
 - **Import aliases**: Paths with hyphens (`data-source`) or reserved words (`model`) require aliases.

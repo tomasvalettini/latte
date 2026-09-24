@@ -35,18 +35,18 @@ When executing shell commands or interacting with the terminal:
 
 ### Architecture (Layered)
 - **CLI Layer**: `cmd/` - Cobra commands, flags, fmt.Println/Scanln
-- **Controller Layer**: `coffeeshop/controller/` - Business logic, orchestration
-- **Data Layer**: `coffeeshop/data/` - Models (`model/`) and Repository (`data-source/`)
+- **Controller Layer**: `core/controller/` - Business logic, orchestration
+- **Data Layer**: `core/data/` - Models (`model/`) and Repository (`data-source/`)
 
 ### Coding Standards
 - Imports order: stdlib → third-party → local (with aliases for `data-source`, `model`, `path`)
-- Receiver names: 1-3 chars (`csc`, `bi`, `coffeeShop`, `ltp`, `ttp`)
+- Receiver names: 1-3 chars (`mc`, `id`, `projectData`, `lpp`, `tpp`)
 - Error handling: `fmt.Println` for user errors, `assert.Assert()` for programmer errors
-- JSON tags: `json:"text"` (not `json:"title"`) for `Blend.Title`
+- JSON tags: `json:"text"` (not `json:"title"`) for `Collection.Title`
 
 ### Style Guidelines
 - Keep functions focused and small
-- Use meaningful variable names (prefer `foundBlend` over `b`, prefer `dripId` over `id`)
+- Use meaningful variable names (prefer `foundCollection` over `b`, prefer `entryId` over `id`)
 - Use type-specific validation methods
 - Prefer composition over inheritance
 - Avoid panics in business logic; use error returns or user-friendly messages
@@ -60,13 +60,13 @@ When executing shell commands or interacting with the terminal:
 - Colocated test files: `foo_test.go` next to `foo.go`
 
 ### Design Patterns
-- **Repository Pattern**: `CoffeeShopDataSource` handles all persistence via `Load()` and `Save()`
-- **Constructor Pattern**: All major types use `New*` constructors (`NewCoffeeShopController`, `NewCoffeeShopDataSource`)
-- **Identifier Pattern**: `BlendIdentifier` resolves by `Id` (≥0) OR `Title` (non-empty)
-- **Dependency Injection**: `CarafePath` interface allows swapping implementations (`LocalCarafePath`, `TestCarafePath`)
+- **Repository Pattern**: `ProjectDataSource` handles all persistence via `Load()` and `Save()`
+- **Constructor Pattern**: All major types use `New*` constructors (`NewMainController`, `NewProjectDataSource`)
+- **Identifier Pattern**: `Identifier` resolves by `Id` (≥0) OR `Title` (non-empty)
+- **Dependency Injection**: `ProjectPath` interface allows swapping implementations (`LocalProjectPath`, `TestProjectPath`)
 
 ### File Persistence
-- Blends stored as JSON in a single file (path determined by `CarafePath`)
+- Collections stored as JSON in a single file (path determined by `ProjectPath`)
 - `Load()` and `Save()` are the only I/O entry points
 - Empty file system returns empty slice (no error)
 
@@ -100,10 +100,10 @@ When executing shell commands or interacting with the terminal:
 
 ## Common Commands
 ```bash
-go build -o latte              # Build binary
+go build -o PROJECT_NAME              # Build binary
 go install                      # Install on Linux/Mac
 go test ./...                  # Run all tests
-go test ./coffeeshop/controller # Run tests for specific package
+go test ./core/controller # Run tests for specific package
 go test -run TestName ./...    # Run single test by name
 go test -v ./...              # Verbose output
 go test -cover ./...          # Coverage report
@@ -116,6 +116,6 @@ go test -coverprofile=coverage.out ./...  # Generate coverage file
 ## Troubleshooting
 | Problem | Solution |
 |---------|----------|
-| Test fails due to temp files not cleaning up | Ensure `t.Cleanup()` is called to remove `carafepath.TMP` |
+| Test fails due to temp files not cleaning up | Ensure `t.Cleanup()` is called to remove `projectpath.TMP` |
 | stdin mocking not working | Capture `os.Stdin` before creating pipe; close write end and restore stdin after |
-| Import path conflicts | Use import aliases (e.g., `datasource "github.com/tomasvalettini/latte/..."`) |
+| Import path conflicts | Use import aliases (e.g., `datasource "github.com/<owner>/<project-name>/..."`) |

@@ -1,13 +1,17 @@
 package datamodel
 
+import (
+	"github.com/tomasvalettini/latte/coffeeshop/data/common/data/extensions"
+)
+
 func GetNextBlendId(blends []Blend) int {
-	var id int = 0 // 0 is for the default blend
+	return extensions.GetNextId(blends, func(b Blend) int { return b.Id }, 0)
+}
 
-	for _, blend := range blends {
-		if blend.Id > id {
-			id = blend.Id
-		}
-	}
+func MaxBlendIdWidth(blends []Blend) int {
+	return extensions.MaxIdWidth(blends, func(b Blend) int { return b.Id })
+}
 
-	return id + 1
+func SortBlendsById(blends []Blend) {
+	extensions.SortById(blends, func(b Blend) int { return b.Id })
 }
